@@ -11,6 +11,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+//@Table(schema = "caloriecalculator")
 @Entity(name = "user_account")
 public class User {
 
@@ -37,7 +38,7 @@ public class User {
     private boolean enabled;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Collection<Role> roles;
@@ -45,6 +46,10 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CalorieIntake> calorieIntakeList;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Sport> sportList;
 
     public User(String name, String password, String email, boolean enabled) {
         this.name = name;

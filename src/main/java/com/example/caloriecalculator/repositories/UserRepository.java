@@ -12,6 +12,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     boolean existsByEmail(String email);
 
     User findByEmail(String email);
+    @Query("select u from user_account u join fetch u.roles where u.email = :email")
+    User findByEmailAndFetchRoles(@Param("email") String email);
     @Query("SELECT u FROM user_account u join fetch u.calorieIntakeList cl where u.email = :email and cl.timeOfIntake between :start and :end")
     User findByEmailAndFetchIntakes(@Param("email") String email, @Param("start") Date start, @Param("end") Date end);
 }

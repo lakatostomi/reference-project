@@ -7,7 +7,8 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Data
-@Entity
+//@Table(schema = "caloriecalculator")
+@Entity(name = "verification_token")
 @NoArgsConstructor
 public class VerificationToken {
 

@@ -12,7 +12,13 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import javax.transaction.Transactional;
+import javax.websocket.Session;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +37,9 @@ public class DataInitializeOnStartUp implements ApplicationListener<ContextRefre
     private PrivilegeRepository privilegeRepository;
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private DataSource dataSource;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -77,5 +86,14 @@ public class DataInitializeOnStartUp implements ApplicationListener<ContextRefre
 
     private User saveUser(User user) {
         return userRepository.save(user);
+    }
+
+    private void initSchema() {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stm = conn.prepareStatement("CREATE SCHEMA \"CALORIECALCULATOR\";");) {
+             stm.execute();
+        } catch (SQLException ex) {
+            throw  new RuntimeException(ex.getMessage());
+        }
     }
 }

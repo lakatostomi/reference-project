@@ -43,8 +43,6 @@ public class UserController {
     private UserModelAssembler modelAssembler;
 
 
-
-
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<User>> findUserById(@PathVariable int id) {
         return new ResponseEntity<>(modelAssembler.toModel(userService.findUserById(id)), HttpStatus.OK);

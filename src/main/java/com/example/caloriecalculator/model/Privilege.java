@@ -10,7 +10,8 @@ import java.util.Collection;
 
 @Data
 @NoArgsConstructor
-@Entity
+//@Table(schema = "caloriecalculator")
+@Entity(name = "privilege")
 public class Privilege {
 
     @Id

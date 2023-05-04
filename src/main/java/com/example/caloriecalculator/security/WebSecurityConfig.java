@@ -51,7 +51,6 @@ public class WebSecurityConfig {
     public AuthenticationManager authenticationManager(HttpSecurity httpSecurity) throws Exception {
         AuthenticationManagerBuilder builder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
         builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        //builder.inMemoryAuthentication().withUser("user").password(passwordEncoder().encode("1234")).roles("USER");
         return builder.build();
     }
 
@@ -63,10 +62,9 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().and().csrf().disable().authorizeHttpRequests()
-//                .anyRequest().permitAll().and()
-                .mvcMatchers("/api/rest/user/registration").permitAll()
-                .mvcMatchers("/api/rest/user/registration/confirm").permitAll()
-                .mvcMatchers("/api/rest/user/login").permitAll()
+                .mvcMatchers("/api/rest/auth/registration").permitAll()
+                .mvcMatchers("/api/rest/auth/registration/confirm").permitAll()
+                .mvcMatchers("/api/rest/auth/login").permitAll()
                 .mvcMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated().and().headers().frameOptions().disable().and()
                 .exceptionHandling().authenticationEntryPoint(authEntryPoint).accessDeniedHandler(accessDeniedHandler).and()
