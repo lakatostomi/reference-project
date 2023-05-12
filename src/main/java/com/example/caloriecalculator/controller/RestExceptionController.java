@@ -6,6 +6,7 @@ import com.example.caloriecalculator.exception.TokenHasExpiredException;
 import com.example.caloriecalculator.util.RestResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -51,7 +52,7 @@ public class RestExceptionController extends ResponseEntityExceptionHandler {
 
     private String createStringFromBindingResult(BindingResult result) {
         if (!result.hasFieldErrors()) {
-            return result.getAllErrors().stream().map(error -> error.getDefaultMessage()).collect(Collectors.joining(";"));
+            return result.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining(";"));
         } else {
             return result.getFieldErrors().stream().map(error -> "[" + error.getField() + " field: " + error.getDefaultMessage() + "]").collect(Collectors.joining("; "));
         }

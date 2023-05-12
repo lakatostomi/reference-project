@@ -39,4 +39,16 @@ public class FoodDTO {
     @NotNull(message = "The field can not be empty!")
     @PositiveOrZero(message = "The field has to be zero or positive!")
     private Double fat;
+
+    @Override
+    public String toString() {
+        return "FoodDTO{" +
+                "name='" + name + '\'' +
+                ", calories=" + calories +
+                ", serving=" + serving +
+                ", carbs=" + carbs +
+                ", protein=" + protein +
+                ", fat=" + fat +
+                '}';
+    }
 }

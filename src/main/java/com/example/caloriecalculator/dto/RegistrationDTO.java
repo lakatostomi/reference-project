@@ -30,4 +30,15 @@ public class RegistrationDTO {
 
     @NotBlank(message = "The field can not be empty!")
     private String confirmPassword;
+
+
+    @Override
+    public String toString() {
+        return "RegistrationDTO{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + "******" + '\'' +
+                ", confirmPassword='" + "******" + '\'' +
+                '}';
+    }
 }

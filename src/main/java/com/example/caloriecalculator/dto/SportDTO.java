@@ -26,4 +26,15 @@ public class SportDTO {
     @NotNull(message = "The field can not be null!")
     @Positive(message = "The field has to be positive!")
     private Double burned_calories;
+
+    @Override
+    public String toString() {
+        return "SportDTO{" +
+                "nameOfActivity='" + nameOfActivity + '\'' +
+                ", user_id=" + user_id +
+                ", burned_calories=" + burned_calories +
+                '}';
+    }
 }
+
+

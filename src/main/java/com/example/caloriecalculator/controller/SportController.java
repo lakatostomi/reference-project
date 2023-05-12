@@ -4,7 +4,7 @@ import com.example.caloriecalculator.dto.SportDTO;
 import com.example.caloriecalculator.model.Sport;
 import com.example.caloriecalculator.model.User;
 import com.example.caloriecalculator.model.assemblers.UserModelAssembler;
-import com.example.caloriecalculator.service.SportService;
+import com.example.caloriecalculator.service.interfaces.ISportService;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ import javax.validation.Valid;
 public class SportController {
 
     private UserModelAssembler modelAssembler;
-    private SportService sportService;
+    private ISportService sportService;
 
     @PostMapping
     public ResponseEntity<EntityModel<User>> saveSportActivity(@RequestBody @Valid SportDTO sportDTO) {

@@ -11,9 +11,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import javax.transaction.Transactional;
 import javax.websocket.Session;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

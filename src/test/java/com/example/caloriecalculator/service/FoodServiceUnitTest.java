@@ -6,28 +6,31 @@ import com.example.caloriecalculator.repositories.FoodRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class FoodServiceUnitTest {
 
-    @Autowired
+    @InjectMocks
     private FoodService foodService;
 
-    @MockBean
+    @Mock
     private FoodRepository foodRepository;
 
     private List<Food> foods;
+
     @BeforeEach
     void setUp() {
         this.foods = new ArrayList<>();
@@ -54,14 +57,14 @@ class FoodServiceUnitTest {
     @Test
     void findById() {
         when(foodRepository.findById(1)).thenReturn(Optional.ofNullable(foods.get(1)));
-        Food food = foodService.findById(1);
+        Food food = foodService.findFoodById(1);
         assertEquals("Pizza", food.getName());
         verify(foodRepository, times(1)).findById(1);
     }
 
     @Test
     void testFindById_whenNotExist_thanException() {
-        assertThrows(NoSuchElementException.class, ()-> foodService.findById(4));
+        assertThrows(NoSuchElementException.class, ()-> foodService.findFoodById(4));
         verify(foodRepository, times(1)).findById(4);
     }
 
@@ -69,7 +72,7 @@ class FoodServiceUnitTest {
     void save() {
         Food cheese = new Food(null, "Cheese", 143.1, 100, 13.1, 15.0, 29.0);
         when(foodRepository.save(cheese)).thenReturn(cheese);
-        Food saved = foodService.save(new FoodDTO("Cheese", 143.1, 100, 13.1, 15.0, 29.0));
+        Food saved = foodService.saveFood(new FoodDTO("Cheese", 143.1, 100, 13.1, 15.0, 29.0));
         assertEquals(143.1, saved.getCalories());
         verify(foodRepository, times(1)).save(cheese);
     }
@@ -84,7 +87,7 @@ class FoodServiceUnitTest {
 
     @Test
     void delete() {
-        foodService.delete(1);
+        foodService.deleteFood(1);
         verify(foodRepository, times(1)).deleteById(1);
     }
 }

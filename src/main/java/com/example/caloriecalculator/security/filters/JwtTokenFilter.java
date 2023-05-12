@@ -42,7 +42,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
             String token = authHeader.substring(("Bearer ").length());
-            DecodedJWT decodedJWT = jwtUtils.validateJwtToken(token);
+            DecodedJWT decodedJWT = jwtUtils.validateJwtToken(token, response);
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 String email = decodedJWT.getClaim("email").asString();

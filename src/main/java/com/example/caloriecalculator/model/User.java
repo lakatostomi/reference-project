@@ -2,10 +2,12 @@ package com.example.caloriecalculator.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 //@Table(schema = "caloriecalculator")
 @Entity(name = "user_account")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
 
     @Id
@@ -56,5 +59,17 @@ public class User {
         this.password = password;
         this.email = email;
         this.enabled = enabled;
+        this.sportList = new ArrayList<>();
+        this.calorieIntakeList = new ArrayList<>();
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", enabled=" + enabled +
+                '}';
     }
 }

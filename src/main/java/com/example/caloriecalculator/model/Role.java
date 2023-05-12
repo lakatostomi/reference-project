@@ -8,7 +8,8 @@ import java.util.Collection;
 
 @Data
 @NoArgsConstructor
-@Entity
+//@Table(schema = "caloriecalculator")
+@Entity(name = "role")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

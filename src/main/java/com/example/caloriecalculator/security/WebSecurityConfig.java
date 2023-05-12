@@ -5,6 +5,7 @@ import com.example.caloriecalculator.security.filters.JwtTokenFilter;
 import com.example.caloriecalculator.security.handler.JwtAccessDeniedHandler;
 import com.example.caloriecalculator.service.MyUserDetailsService;
 import com.example.caloriecalculator.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,19 +29,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor
 public class WebSecurityConfig {
 
-    private final AuthEntryPoint authEntryPoint;
-    private final JwtAccessDeniedHandler accessDeniedHandler;
-    private final JwtTokenFilter jwtTokenFilter;
-    @Autowired
+    private AuthEntryPoint authEntryPoint;
+    private JwtAccessDeniedHandler accessDeniedHandler;
+    private JwtTokenFilter jwtTokenFilter;
     private MyUserDetailsService userDetailsService;
-
-    public WebSecurityConfig(AuthEntryPoint authEntryPoint, JwtAccessDeniedHandler accessDeniedHandler, JwtTokenFilter jwtTokenFilter) {
-        this.authEntryPoint = authEntryPoint;
-        this.accessDeniedHandler = accessDeniedHandler;
-        this.jwtTokenFilter = jwtTokenFilter;
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

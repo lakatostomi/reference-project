@@ -6,6 +6,7 @@ import com.example.caloriecalculator.model.CalorieIntake;
 import com.example.caloriecalculator.model.User;
 import com.example.caloriecalculator.repositories.FoodRepository;
 import com.example.caloriecalculator.repositories.UserRepository;
+import com.example.caloriecalculator.service.interfaces.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
@@ -19,19 +20,21 @@ import java.util.NoSuchElementException;
 
 @AllArgsConstructor
 @Service
-public class UserService {
+public class UserService implements IUserService {
 
     private UserRepository userRepository;
 
-
+    @Override
     public User loginUser(String email) {
         return userRepository.findByEmail(email);
     }
 
+    @Override
     public User findUserById(int id) {
-        return userRepository.findById(id).orElseThrow(()-> new NoSuchElementException("The user with [id=" +id + "] is not exist!"));
+        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("The user with [id=" + id + "] is not exist!"));
     }
 
+    @Override
     public User updateProfileOfUser(ProfileUpdateDTO profileUpdateDTO, int id) {
         User user = findUserById(id);
         if (profileUpdateDTO.getAge() != null) {
@@ -52,11 +55,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Override
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
-    public void deleteUser(int id) {userRepository.deleteById(id);
+    @Override
+    public void deleteUser(int id) {
+        userRepository.deleteById(id);
     }
 
 }

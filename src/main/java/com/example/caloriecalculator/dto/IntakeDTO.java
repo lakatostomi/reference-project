@@ -25,4 +25,13 @@ public class IntakeDTO {
     @NotNull(message = "The field can not be null!")
     @Positive(message = "The value of the field has to be positive!")
     private Double quantityOfFood;
+
+    @Override
+    public String toString() {
+        return "IntakeDTO{" +
+                "foodId=" + foodId +
+                ", userId=" + userId +
+                ", quantityOfFood=" + quantityOfFood +
+                '}';
+    }
 }
