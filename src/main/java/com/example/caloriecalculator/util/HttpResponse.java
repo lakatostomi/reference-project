@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 @Data
@@ -19,7 +20,7 @@ public class HttpResponse {
     private String message;
 
     public HttpResponse(int statusCode, HttpStatus httpStatus, String message) {
-        this.time = new Date();
+        this.time = new Date(LocalDateTime.now().toInstant(ZoneOffset.of("+02:00")).toEpochMilli());
         this.statusCode = statusCode;
         this.httpStatus = httpStatus;
         this.message = message;

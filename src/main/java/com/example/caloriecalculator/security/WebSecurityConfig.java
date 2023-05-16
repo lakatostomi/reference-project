@@ -4,21 +4,15 @@ import com.example.caloriecalculator.security.filters.AuthEntryPoint;
 import com.example.caloriecalculator.security.filters.JwtTokenFilter;
 import com.example.caloriecalculator.security.handler.JwtAccessDeniedHandler;
 import com.example.caloriecalculator.service.MyUserDetailsService;
-import com.example.caloriecalculator.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -61,6 +55,8 @@ public class WebSecurityConfig {
                 .mvcMatchers("/api/rest/auth/registration/confirm").permitAll()
                 .mvcMatchers("/api/rest/auth/login").permitAll()
                 .mvcMatchers("/h2-console/**").permitAll()
+                .mvcMatchers("/swagger-ui/**").permitAll()
+                .mvcMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated().and().headers().frameOptions().disable().and()
                 .exceptionHandling().authenticationEntryPoint(authEntryPoint).accessDeniedHandler(accessDeniedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

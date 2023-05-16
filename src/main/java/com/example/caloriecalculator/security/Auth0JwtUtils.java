@@ -4,12 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.caloriecalculator.exception.TokenHasExpiredException;
 import com.example.caloriecalculator.util.HttpResponse;
 import com.example.caloriecalculator.util.RestResponseUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,7 +45,7 @@ public class Auth0JwtUtils {
                 .withClaim("email", userDetails.getUsername())
                 .withClaim("roles", userDetails.getAuthorities().stream().map(ga-> ga.getAuthority()).collect(Collectors.joining(";")))
                 .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 86_400_000L)) //1 day
+                .withExpiresAt(new Date(System.currentTimeMillis() + 3_600_000L)) //1 hour
                 .withJWTId(UUID.randomUUID().toString())
                 .sign(algorithm);
         return jwtToken;
@@ -61,17 +57,12 @@ public class Auth0JwtUtils {
             return decodedJWT;
         } catch (JWTVerificationException ex) {
             log.warn("Token verification failure", ex);
-            OutputStream outputStream = response.getOutputStream();
-            String jsonResponse = RestResponseUtil.createJsonStringResponse(
-                    new HttpResponse(HttpStatus.FORBIDDEN.value(),
-                            HttpStatus.FORBIDDEN,
-                            ex.getMessage())
-            );
-            response.setStatus(403);
+            HttpResponse httpResponse = new HttpResponse(HttpStatus.UNAUTHORIZED.value(),
+                            HttpStatus.UNAUTHORIZED,
+                            ex.getMessage());
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(outputStream, jsonResponse);
-            outputStream.flush();
+            RestResponseUtil.sendHttpResponse(response, httpResponse);
         }
         return null;
     }

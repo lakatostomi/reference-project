@@ -12,9 +12,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.NoSuchElementException;
@@ -40,7 +39,7 @@ public class VerificationTokenService implements IVerificationTokenService {
         if (verificationToken == null) {
             throw new NoSuchElementException("The token is not exist!");
         }
-        if (verificationToken.getExpiryDate().before(new Date())) {
+        if (verificationToken.getExpiryDate().before(new Date(LocalDateTime.now().minusHours(24).toInstant(ZoneOffset.of("+02:00")).toEpochMilli()))) {
             throw new TokenHasExpiredException("Token has expired!");
         }
         return verificationToken;

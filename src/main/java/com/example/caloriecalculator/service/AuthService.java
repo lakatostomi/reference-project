@@ -1,6 +1,7 @@
 package com.example.caloriecalculator.service;
 
 import com.example.caloriecalculator.dto.RegistrationDTO;
+import com.example.caloriecalculator.exception.EmailAlreadyExistsException;
 import com.example.caloriecalculator.model.User;
 import com.example.caloriecalculator.repositories.RoleRepository;
 import com.example.caloriecalculator.repositories.UserRepository;
@@ -23,7 +24,10 @@ public class AuthService implements IAuthService {
 
     @Override
     public boolean checkEmailExists(String email) {
-        return userRepository.existsByEmail(email);
+        if (userRepository.existsByEmail(email)) {
+            throw new EmailAlreadyExistsException(email);
+        }
+        return false;
     }
 
     @Override

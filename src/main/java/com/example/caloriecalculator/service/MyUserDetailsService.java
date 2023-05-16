@@ -4,7 +4,8 @@ import com.example.caloriecalculator.model.Privilege;
 import com.example.caloriecalculator.model.Role;
 import com.example.caloriecalculator.model.User;
 import com.example.caloriecalculator.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,17 +18,19 @@ import java.util.Collection;
 import java.util.List;
 
 @Component
+@AllArgsConstructor
+@Slf4j
 public class MyUserDetailsService implements UserDetailsService {
 
-    @Autowired
     private UserRepository userRepository;
 
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        log.debug("Load User by email: {}", email);
         User user = userRepository.findByEmailAndFetchRoles(email);
         if (user == null) {
-            throw  new UsernameNotFoundException("No user has found with this email: " + email);
+            throw new UsernameNotFoundException("No user has found with this email: " + email);
         }
 
 
@@ -41,6 +44,7 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
+        log.debug("Creating authorities for User");
         return getGrantedAuthorities(getPrivileges(roles));
     }
 

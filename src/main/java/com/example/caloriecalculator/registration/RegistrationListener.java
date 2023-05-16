@@ -2,7 +2,6 @@ package com.example.caloriecalculator.registration;
 
 import com.example.caloriecalculator.model.User;
 import com.example.caloriecalculator.service.interfaces.IVerificationTokenService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
@@ -16,9 +15,9 @@ import java.util.UUID;
 @Component
 public class RegistrationListener implements ApplicationListener<RegistrationFinishedEvent> {
 
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
-    private IVerificationTokenService tokenService;
+    private final IVerificationTokenService tokenService;
 
     @Value("${spring.mail.username}")
     private String SENDER;

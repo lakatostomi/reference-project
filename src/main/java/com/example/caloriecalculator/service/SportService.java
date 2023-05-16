@@ -25,9 +25,13 @@ public class SportService implements ISportService {
     @Override
     public User saveUsersActivity(SportDTO sportDTO) {
         log.info("User={} is saving a new sport activity={}", SecurityContextHolder.getContext().getAuthentication().getName(), sportDTO);
-        User user = userRepository.findById(sportDTO.getUser_id()).orElseThrow(() -> new NoSuchElementException("This user with id=" + sportDTO.getUser_id() + " is not exist!"));
+        User user = getUser(sportDTO.getUser_id());
         user.getSportList().add(convertToSport(sportDTO, user));
         return userRepository.save(user);
+    }
+
+    private User getUser(Integer id) {
+        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("This user with id=" + id + " is not exist!"));
     }
 
     private Sport convertToSport(SportDTO sportDTO, User user) {
@@ -44,11 +48,11 @@ public class SportService implements ISportService {
     @Override
     public User updateActivity(Integer sport_id, Double burned_calories) {
         log.info("User={} is updating a sport activity with id={} new burned calories={}", SecurityContextHolder.getContext().getAuthentication().getName(),
-        sport_id, burned_calories);
+                sport_id, burned_calories);
         Sport sport = sportRepository.getReferenceById(sport_id);
         sport.setBurnedCalories(burned_calories);
         sportRepository.save(sport);
-        return userRepository.findById(sport.getUser().getId()).orElseThrow(() -> new NoSuchElementException("This user with id=" + sport.getUser().getId() + " is not exist!"));
+        return getUser(sport.getUser().getId());
     }
 
     @Override

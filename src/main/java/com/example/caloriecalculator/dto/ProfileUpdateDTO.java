@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.validation.constraints.Positive;
-
 @Data
 @AllArgsConstructor
 @Builder

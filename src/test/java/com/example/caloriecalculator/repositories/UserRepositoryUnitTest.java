@@ -1,20 +1,26 @@
 package com.example.caloriecalculator.repositories;
 
 
-import com.example.caloriecalculator.CommonDataInitializer;
+import com.example.caloriecalculator.util.CommonDataInitializer;
 import com.example.caloriecalculator.model.User;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DataJpaTest
-public class UserRepositoryUnitTest extends CommonDataInitializer {
+@SpringBootTest
+@Profile("test")
+public class UserRepositoryUnitTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -22,7 +28,6 @@ public class UserRepositoryUnitTest extends CommonDataInitializer {
 
     @BeforeEach
     public void setup() {
-        initData();
     }
 
     @Test
@@ -34,12 +39,22 @@ public class UserRepositoryUnitTest extends CommonDataInitializer {
     @Test
     public void testFindUserWithoutFetch() {
         User user = userRepository.findByEmail("admin@gmail.com");
-        assertThrows(LazyInitializationException.class, ()->user.getRoles().size());
+        assertThrows(LazyInitializationException.class, () -> user.getRoles().size());
     }
 
     @AfterEach
     void after() {
 
+    }
+
+    @TestConfiguration
+    public static class TestConfigClass {
+
+        @Transactional
+        @Bean(initMethod = "initData")
+        public CommonDataInitializer commonDataInitializer() {
+            return new CommonDataInitializer();
+        }
     }
 }
 

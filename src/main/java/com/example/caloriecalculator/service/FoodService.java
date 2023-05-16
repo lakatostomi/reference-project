@@ -40,7 +40,7 @@ public class FoodService implements Converter<FoodDTO, Food>, IFoodService {
 
     @Override
     public Food updateFood(FoodDTO foodDTO, Integer id) {
-        log.info("User={} is updating a food id={} with values={}",SecurityContextHolder.getContext().getAuthentication().getName(), id, foodDTO);
+        log.info("User={} is updating a food id={} with values={}", SecurityContextHolder.getContext().getAuthentication().getName(), id, foodDTO);
         if (id == null) {
             throw new NoSuchElementException("The id of food can not be null!");
         }

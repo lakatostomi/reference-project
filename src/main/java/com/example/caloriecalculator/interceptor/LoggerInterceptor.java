@@ -1,7 +1,6 @@
 package com.example.caloriecalculator.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -35,10 +34,10 @@ public class LoggerInterceptor implements HandlerInterceptor {
         log.info("Request header:");
         Iterator<String> itr = request.getHeaderNames().asIterator();
         while (itr.hasNext()) {
-                String key = itr.next();
-                if (request.getHeader(key) != null || !request.getHeader(key).isEmpty()) {
-                    log.debug(key + " " + request.getHeader(key));
-                }
+            String key = itr.next();
+            if (request.getHeader(key) != null || !request.getHeader(key).isEmpty()) {
+                log.debug(key + " " + request.getHeader(key));
+            }
         }
     }
 

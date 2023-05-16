@@ -19,8 +19,7 @@ public class RegistrationDTO {
 
     @NotBlank(message = "The field can not be empty!")
     private String name;
-
-    @Email
+    @Email(message = "This email format is not supported!")
     @NotBlank(message = "The field can not be empty!")
     private String email;
 

@@ -13,12 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
-import javax.websocket.Session;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -38,8 +32,6 @@ public class DataInitializeOnStartUp implements ApplicationListener<ContextRefre
     @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
-    private DataSource dataSource;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -57,13 +49,16 @@ public class DataInitializeOnStartUp implements ApplicationListener<ContextRefre
 
         User admin = new User("admin", passwordEncoder.encode("admin"), "admin@admin.com", true);
         User tomi = new User("Tomi", passwordEncoder.encode("lt18I##IC"), "tomi@gmail.com", true);
+
         CalorieIntake intake = new CalorieIntake(null, new Date(), 300.0, pizza, tomi);
         CalorieIntake intake2 = new CalorieIntake(null, new Date(), 200.0, hamburger, tomi);
         Date date = Date.from(Instant.parse("2023-05-03T10:15:30.00Z"));
         CalorieIntake intake3 = new CalorieIntake(null, date, 100.0, beefsteak, tomi);
+
         tomi.setCalorieIntakeList(List.of(intake, intake2, intake3));
         admin.setRoles(List.of(adminRole));
         tomi.setRoles(List.of(userRole));
+
         saveUser(admin);
         saveUser(tomi);
 
@@ -84,16 +79,9 @@ public class DataInitializeOnStartUp implements ApplicationListener<ContextRefre
         return foodRepository.save(food);
     }
 
+    @Transactional
     private User saveUser(User user) {
         return userRepository.save(user);
     }
 
-    private void initSchema() {
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stm = conn.prepareStatement("CREATE SCHEMA \"CALORIECALCULATOR\";");) {
-             stm.execute();
-        } catch (SQLException ex) {
-            throw  new RuntimeException(ex.getMessage());
-        }
-    }
 }

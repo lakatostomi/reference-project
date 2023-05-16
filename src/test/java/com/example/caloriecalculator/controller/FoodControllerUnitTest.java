@@ -11,9 +11,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -44,7 +50,6 @@ class FoodControllerUnitTest {
     private String baseURI = "http://localhost/api/rest/foods";
 
 
-
     @BeforeEach
     void setUp() {
         this.foodList = Instancio.ofList(Food.class).size(10).create();
@@ -56,7 +61,7 @@ class FoodControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "test@test.com",password = "test")
+    @WithMockUser(username = "test@test.com", password = "test")
     void testFindAll() throws Exception {
         when(foodService.findAll()).thenReturn(foodList);
         MvcResult result = mockMvc.perform(get("/api/rest/foods")).andExpect(status().isOk()).andReturn();
@@ -66,8 +71,8 @@ class FoodControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "test@test.com",password = "test")
-    void testFindById() throws Exception{
+    @WithMockUser(username = "test@test.com", password = "test")
+    void testFindById() throws Exception {
         when(foodService.findFoodById(1)).thenReturn(foodList.get(0));
         MvcResult result = mockMvc.perform(get("/api/rest/foods/{id}", 1)).andExpect(status().isOk()).andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString(baseURI + "/" + foodList.get(0).getId()));
@@ -75,7 +80,7 @@ class FoodControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "test@test.com",password = "test")
+    @WithMockUser(username = "test@test.com", password = "test")
     void testFindById_whenNotFound_thanBadRequest() throws Exception {
         when(foodService.findFoodById(0)).thenThrow(NoSuchElementException.class);
         mockMvc.perform(get("/api/rest/foods/{id}", 0)).andExpect(status().is4xxClientError());
@@ -83,7 +88,8 @@ class FoodControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "test@test.com",password = "test")
+    @WithMockUser(username = "test@test.com", authorities = {"ROLE_ADMIN", "WRITE_PRIVILEGE"})
+    @WithUserDetails(value = "admin")
     void testSaveNewFood() throws Exception {
         FoodDTO foodDTO = Instancio.create(FoodDTO.class);
         Food food = Instancio.create(Food.class);
@@ -97,12 +103,12 @@ class FoodControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "test@test.com",password = "test")
+    @WithMockUser(username = "test@test.com", authorities = {"ROLE_ADMIN", "WRITE_PRIVILEGE"})
     void testUpdateFood() throws Exception {
         FoodDTO foodDTO = Instancio.create(FoodDTO.class);
         Food food = Instancio.create(Food.class);
         when(foodService.updateFood(foodDTO, 1)).thenReturn(food);
-        MvcResult result = mockMvc.perform(put("/api/rest/foods/{id}",1).contentType(MediaType.APPLICATION_JSON)
+        MvcResult result = mockMvc.perform(put("/api/rest/foods/{id}", 1).contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(foodDTO)))
                 .andExpect(status().isCreated()).andReturn();
         String createdURI = result.getResponse().getHeader("Location");
@@ -111,9 +117,10 @@ class FoodControllerUnitTest {
     }
 
     @Test
-    @WithMockUser(username = "test@test.com",password = "test")
+    @WithMockUser(username = "test@test.com", authorities = {"ROLE_ADMIN", "WRITE_PRIVILEGE"})
     void testDeleteFood() throws Exception {
         mockMvc.perform(delete("/api/rest/foods/{id}", 1)).andExpect(status().isNoContent());
         verify(foodService, times(1)).deleteFood(1);
     }
+
 }

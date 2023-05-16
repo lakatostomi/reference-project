@@ -1,20 +1,13 @@
 package com.example.caloriecalculator.service;
 
-import com.example.caloriecalculator.dto.IntakeDTO;
 import com.example.caloriecalculator.dto.ProfileUpdateDTO;
-import com.example.caloriecalculator.model.CalorieIntake;
+import com.example.caloriecalculator.exception.AccountIsUnavailableException;
 import com.example.caloriecalculator.model.User;
-import com.example.caloriecalculator.repositories.FoodRepository;
 import com.example.caloriecalculator.repositories.UserRepository;
 import com.example.caloriecalculator.service.interfaces.IUserService;
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -26,7 +19,11 @@ public class UserService implements IUserService {
 
     @Override
     public User loginUser(String email) {
-        return userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email);
+        if (!user.isEnabled()) {
+            throw new AccountIsUnavailableException("Your account is not available! Confirm your registration before login!");
+        }
+        return user;
     }
 
     @Override

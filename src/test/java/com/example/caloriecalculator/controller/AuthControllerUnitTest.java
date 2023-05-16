@@ -2,6 +2,7 @@ package com.example.caloriecalculator.controller;
 
 import com.example.caloriecalculator.dto.LoginRequestDTO;
 import com.example.caloriecalculator.dto.RegistrationDTO;
+import com.example.caloriecalculator.exception.EmailAlreadyExistsException;
 import com.example.caloriecalculator.exception.TokenHasExpiredException;
 import com.example.caloriecalculator.model.User;
 import com.example.caloriecalculator.model.VerificationToken;
@@ -19,11 +20,8 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,7 +34,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,7 +45,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@Profile("test")
 @AutoConfigureMockMvc
 class AuthControllerUnitTest {
 
@@ -82,14 +78,14 @@ class AuthControllerUnitTest {
 
     @Test
     void testRegistration() throws Exception {
-        RegistrationDTO registrationDTO = new RegistrationDTO("Test", "test@test.com", "LT18i8##o","LT18i8##o");
+        RegistrationDTO registrationDTO = new RegistrationDTO("Test", "test@test.com", "LT18i8##o", "LT18i8##o");
         User user = Instancio.create(User.class);
         when(authService.checkEmailExists(registrationDTO.getEmail())).thenReturn(false);
         when(authService.registerUser(registrationDTO)).thenReturn(user);
         ArgumentCaptor<RegistrationFinishedEvent> finishedEventArgumentCaptor = ArgumentCaptor.forClass(RegistrationFinishedEvent.class);
         doAnswer(invocationOnMock -> {
             RegistrationFinishedEvent event = new RegistrationFinishedEvent("url", user);
-           return event;
+            return event;
         }).when(publisher).publishEvent(finishedEventArgumentCaptor.capture());
         doNothing().when(listener).onApplicationEvent(any(RegistrationFinishedEvent.class));
         MvcResult result = mockMvc.perform(post("/api/rest/auth/registration").contentType(MediaType.APPLICATION_JSON)
@@ -102,17 +98,18 @@ class AuthControllerUnitTest {
     }
 
     @Test
-    void testRegistration_whenEmailExist_thanException() throws Exception{
-        RegistrationDTO registrationDTO = new RegistrationDTO("Test", "test@test.com", "LT18i8##o","LT18i8##o");
-        when(authService.checkEmailExists(registrationDTO.getEmail())).thenReturn(true);
+    void testRegistration_whenEmailExist_thanException() throws Exception {
+        RegistrationDTO registrationDTO = new RegistrationDTO("Test", "test@test.com", "LT18i8##o", "LT18i8##o");
+        when(authService.checkEmailExists(registrationDTO.getEmail())).thenThrow(new EmailAlreadyExistsException(registrationDTO.getEmail()));
         MvcResult result = mockMvc.perform(post("/api/rest/auth/registration").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(registrationDTO))).andExpect(status().isBadRequest()).andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString("An account for that email already exists: [" + registrationDTO.getEmail() + "]!"));
     }
 
-    @Test //should test every field constraints, but now I test only one object constraint
-    void whenPasswordNotMatches_thanException() throws Exception{
-        RegistrationDTO registrationDTO = new RegistrationDTO("Test", "test@test.com", "LT18i8##o0","LT18i8##o");
+    @Test
+        //should test every field constraints, but now I test only one object constraint
+    void whenPasswordNotMatches_thanException() throws Exception {
+        RegistrationDTO registrationDTO = new RegistrationDTO("Test", "test@test.com", "LT18i8##o0", "LT18i8##o");
         MvcResult result = mockMvc.perform(post("/api/rest/auth/registration").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(registrationDTO))).andExpect(status().isBadRequest()).andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString("Passwords are not matches!"));
@@ -131,7 +128,7 @@ class AuthControllerUnitTest {
     }
 
     @Test
-    void testConfirmRegistration_whenTokenHasExpired_thanException() throws Exception{
+    void testConfirmRegistration_whenTokenHasExpired_thanException() throws Exception {
         when(tokenService.verifyToken(any(String.class))).thenThrow(TokenHasExpiredException.class);
         mockMvc.perform(get("/api/rest/auth/registration/confirm").param("token", "234edfdf"))
                 .andExpect(status().isBadRequest()).andReturn();
@@ -142,7 +139,7 @@ class AuthControllerUnitTest {
     @Test
     void testLogin() throws Exception {
         User user = Instancio.create(User.class);
-        LoginRequestDTO requestDTO = Instancio.create(LoginRequestDTO.class);
+        LoginRequestDTO requestDTO = new LoginRequestDTO("test@test.com", "test");
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn(new org.springframework.security.core.userdetails.User(requestDTO.getEmail(), requestDTO.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_USER"))));
         when(manager.authenticate((new UsernamePasswordAuthenticationToken(requestDTO.getEmail(), requestDTO.getPassword())))).thenReturn(authentication);
@@ -158,7 +155,7 @@ class AuthControllerUnitTest {
     }
 
     @Test
-    void testLogin_withNotExistingCredentials() throws Exception{
+    void testLogin_withNotExistingCredentials() throws Exception {
         LoginRequestDTO requestDTO = Instancio.create(LoginRequestDTO.class);
         when(manager.authenticate((new UsernamePasswordAuthenticationToken(requestDTO.getEmail(), requestDTO.getPassword()))))
                 .thenThrow(UsernameNotFoundException.class);
