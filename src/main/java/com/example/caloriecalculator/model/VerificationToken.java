@@ -18,7 +18,7 @@ public class VerificationToken {
     private String token;
     @Temporal(TemporalType.TIMESTAMP)
     private Date expiryDate;
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "VERIFY_USER"))
     private User user;
 

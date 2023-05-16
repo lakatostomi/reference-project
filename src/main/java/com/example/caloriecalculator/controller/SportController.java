@@ -38,7 +38,7 @@ public class SportController {
                     , content = @Content(mediaType = "application/json"))})
     @PostMapping
     public ResponseEntity<EntityModel<User>> saveSportActivity(@Parameter(description = "Contains values of sport activity") @RequestBody @Valid SportDTO sportDTO) {
-        User user = sportService.saveUsersActivity(sportDTO);
+        User user = sportService.saveUsersSport(sportDTO);
         return new ResponseEntity<>(modelAssembler.toModel(user), HttpStatus.OK);
     }
 
@@ -51,7 +51,7 @@ public class SportController {
                     , content = @Content(mediaType = "application/json"))})
     @GetMapping("/{id}")
     public ResponseEntity<Sport> findSportById(@Parameter(description = "The ID of sport activity") @PathVariable Integer id) {
-        return new ResponseEntity<>(sportService.findById(id), HttpStatus.OK);
+        return new ResponseEntity<>(sportService.findSportById(id), HttpStatus.OK);
     }
 
     @Operation(summary = "Updating sport activity for User")
@@ -64,7 +64,7 @@ public class SportController {
     @PutMapping()
     public ResponseEntity<EntityModel<User>> updateSportActivity(@Parameter(description = "The ID of sport") @RequestParam("id") Integer id,
                                                                  @Parameter(description = "The new value of the activity") @RequestParam("calories") Double calories) {
-        User user = sportService.updateActivity(id, calories);
+        User user = sportService.updateSport(id, calories);
         return new ResponseEntity<>(modelAssembler.toModel(user), HttpStatus.OK);
     }
 
@@ -77,7 +77,7 @@ public class SportController {
                     , content = @Content(mediaType = "application/json"))})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSportActivity(@Parameter(description = "The ID of sport activity") @PathVariable Integer id) {
-        sportService.deleteActivity(id);
+        sportService.deleteSport(id);
         return ResponseEntity.noContent().build();
     }
 }

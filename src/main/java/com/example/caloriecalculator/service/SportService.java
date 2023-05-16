@@ -23,7 +23,7 @@ public class SportService implements ISportService {
     private UserRepository userRepository;
 
     @Override
-    public User saveUsersActivity(SportDTO sportDTO) {
+    public User saveUsersSport(SportDTO sportDTO) {
         log.info("User={} is saving a new sport activity={}", SecurityContextHolder.getContext().getAuthentication().getName(), sportDTO);
         User user = getUser(sportDTO.getUser_id());
         user.getSportList().add(convertToSport(sportDTO, user));
@@ -46,7 +46,7 @@ public class SportService implements ISportService {
     }
 
     @Override
-    public User updateActivity(Integer sport_id, Double burned_calories) {
+    public User updateSport(Integer sport_id, Double burned_calories) {
         log.info("User={} is updating a sport activity with id={} new burned calories={}", SecurityContextHolder.getContext().getAuthentication().getName(),
                 sport_id, burned_calories);
         Sport sport = sportRepository.getReferenceById(sport_id);
@@ -56,13 +56,13 @@ public class SportService implements ISportService {
     }
 
     @Override
-    public Sport findById(Integer id) {
+    public Sport findSportById(Integer id) {
         log.info("User={} is requesting a sport activity with id={}", SecurityContextHolder.getContext().getAuthentication().getName(), id);
-        return sportRepository.findById(id).orElseThrow(() -> new NoSuchElementException("This sport is not exist!"));
+        return sportRepository.findById(id).orElseThrow(() -> new NoSuchElementException("This sport with id=" + id + " is not exist!"));
     }
 
     @Override
-    public void deleteActivity(Integer id) {
+    public void deleteSport(Integer id) {
         log.info("User={} is deleting a sport activity with id={}", SecurityContextHolder.getContext().getAuthentication().getName(), id);
         sportRepository.deleteById(id);
     }

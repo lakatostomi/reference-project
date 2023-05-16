@@ -30,7 +30,7 @@ public class CalorieCalculatorApplication {
                         - Auth0 authentication
                         - Introducing roles (ADMIN, USER)
                         - Delivering states through HATEOAS
-                        - Tests running in testcontainers (MySQL) (not every test class has developed - only 2 controller test, 2 service test, 2 repository test where queries has created with @Query annotation and 1 integration test)
+                        - Tests running in testcontainers (MySQL) (not every test class has developed - only 2 controller test, 2 service test, 2 repository test where queries have created with @Query annotation and 1 integration test)
                         - H2 DB in dev environment and MySQL DB in prod environment
                         - In order to test that verification email is sent, set a valid host in application.properties
                                                 

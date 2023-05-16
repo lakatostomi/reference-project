@@ -171,7 +171,7 @@ CREATE TABLE `verification_token` (
   `user_id` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `VERIFY_USER` (`user_id`),
-  CONSTRAINT `VERIFY_USER` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`)
+  CONSTRAINT `VERIFY_USER` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

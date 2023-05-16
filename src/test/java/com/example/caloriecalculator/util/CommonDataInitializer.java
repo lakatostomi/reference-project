@@ -31,8 +31,7 @@ public class CommonDataInitializer {
     private VerificationTokenRepository verificationTokenRepository;
     @Autowired
     private FoodRepository foodRepository;
-    @Autowired
-    private CalorieIntakeRepository calorieIntakeRepository;
+
 
     public CommonDataInitializer() {
     }
@@ -52,14 +51,16 @@ public class CommonDataInitializer {
         Food beefsteak = foodRepository.save(new Food(null, "Beefsteak", 233.0, 100, 21.0, 41.1, 22.0));
         User tom = new User("Tom", passwordEncoder.encode("1111"), "tom@gmail.com", true);
         tom.setRoles(List.of(roleUser));
+        tom = userRepository.save(tom);
         User peter = new User("Peter", passwordEncoder.encode("2222"), "peter@gmail.com", true);
         peter.setRoles(List.of(roleUser));
+        userRepository.save(peter);
         User admin = new User("admin", passwordEncoder.encode("3333"), "admin@gmail.com", true);
         admin.setRoles(List.of(roleAdmin));
-        userRepository.save(tom);
-        userRepository.save(peter);
         userRepository.save(admin);
-        calorieIntakeRepository.save(new CalorieIntake(null, new Date(), 343.2, hamburger, tom));
+        tom.getCalorieIntakeList().add(new CalorieIntake(null, new Date(), 343.2, hamburger, tom));
+        tom.getSportList().add(new Sport(null, "Run", tom, 456.0, new Date()));
+        userRepository.save(tom);
         LocalDateTime now = LocalDateTime.now();
         verificationTokenRepository.save(new VerificationToken("e5e38bed-dafe-4af2-a988-015424e69954", now.minusSeconds(60).toInstant(ZoneOffset.of("+02:00")).toEpochMilli(), tom));
         verificationTokenRepository.save(new VerificationToken("e5e38bed-dafe-4af2-a988-015424e68888", now.plusSeconds(10).toInstant(ZoneOffset.of("+02:00")).toEpochMilli(), peter));

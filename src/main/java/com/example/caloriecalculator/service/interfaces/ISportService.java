@@ -6,11 +6,11 @@ import com.example.caloriecalculator.model.User;
 
 public interface ISportService {
 
-    User saveUsersActivity(SportDTO sportDTO);
+    User saveUsersSport(SportDTO sportDTO);
 
-    User updateActivity(Integer sport_id, Double burned_calories);
+    User updateSport(Integer sport_id, Double burned_calories);
 
-    Sport findById(Integer id);
+    Sport findSportById(Integer id);
 
-    void deleteActivity(Integer id);
+    void deleteSport(Integer id);
 }

@@ -229,6 +229,25 @@ public class CCIntegrationTestRestAssured {
                 .assertThat().body("message", equalTo("No class com.example.caloriecalculator.model.CalorieIntake entity with id 14 exists!"));
     }
 
+    @Test
+    void testOrphanRemove_whenDeleteUser_thanRemoveIntakesAndSports() {
+        String token = executeLoginToGetToken("tom@gmail.com", "1111");
+        //delete user account
+        given().auth().oauth2(token, OAuthSignature.HEADER)
+                .with().contentType("application/json").pathParam("id", "1")
+                .delete(url + "/user/{id}").then().statusCode(204).log().ifError();
+        //send request to get an intake of user
+        given().auth().oauth2(token, OAuthSignature.HEADER)
+                .with().contentType("application/json").pathParam("id", "1")
+                .get(url + "/user/intake/{id}").then().statusCode(400).log().ifError()
+                .assertThat().body("message", equalTo("This calorie intake with id=1 is not exist!"));
+        //send request to get a sport acticity of user
+        given().auth().oauth2(token, OAuthSignature.HEADER)
+                .with().contentType("application/json").pathParam("id", "1")
+                .get(url + "/user/sport/{id}").then().statusCode(400).log().ifError()
+                .assertThat().body("message", equalTo("This sport with id=1 is not exist!"));
+    }
+
     private String executeLoginToGetToken(String email, String password) {
         LoginRequestDTO loginRequestDTO = new LoginRequestDTO(email, password);
         return with().contentType("application/json").body(loginRequestDTO).when().post(url + "/auth/login")
