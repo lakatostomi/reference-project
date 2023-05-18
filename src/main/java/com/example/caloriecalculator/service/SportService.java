@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 
 @Service
 @AllArgsConstructor
@@ -49,10 +51,12 @@ public class SportService implements ISportService {
     public User updateSport(Integer sport_id, Double burned_calories) {
         log.info("User={} is updating a sport activity with id={} new burned calories={}", SecurityContextHolder.getContext().getAuthentication().getName(),
                 sport_id, burned_calories);
-        Sport sport = sportRepository.getReferenceById(sport_id);
-        sport.setBurnedCalories(burned_calories);
-        sportRepository.save(sport);
-        return getUser(sport.getUser().getId());
+        User user = userRepository.findUserBySport(sport_id);
+        BiConsumer<Double, Sport> consumer = (burnedCal, sport) -> sport.setBurnedCalories(burnedCal);
+        Sport sport = user.getSportList().stream().filter(sport1 -> Objects.equals(sport_id, sport1.getId()))
+                .findAny().orElseThrow(() -> new NoSuchElementException("This sport with id=" + sport_id + " is not exist!"));
+        consumer.accept(burned_calories, sport);
+        return userRepository.save(user);
     }
 
     @Override

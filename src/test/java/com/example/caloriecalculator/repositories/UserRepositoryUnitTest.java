@@ -1,8 +1,8 @@
 package com.example.caloriecalculator.repositories;
 
 
-import com.example.caloriecalculator.util.CommonDataInitializer;
 import com.example.caloriecalculator.model.User;
+import com.example.caloriecalculator.util.CommonDataInitializer;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +39,18 @@ public class UserRepositoryUnitTest {
     public void testFindUserWithoutFetch() {
         User user = userRepository.findByEmail("admin@gmail.com");
         assertThrows(LazyInitializationException.class, () -> user.getRoles().size());
+    }
+
+    @Test
+    public void testFindUserByCalorieIntake() {
+        User user = userRepository.findUserByCalorieIntake(1);
+        assertEquals("Tom", user.getName());
+    }
+
+    @Test
+    public void testFindUserBySport() {
+        User user = userRepository.findUserBySport(1);
+        assertEquals("Tom", user.getName());
     }
 
     @AfterEach

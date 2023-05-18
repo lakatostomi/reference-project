@@ -7,13 +7,14 @@ import com.example.caloriecalculator.repositories.CalorieIntakeRepository;
 import com.example.caloriecalculator.repositories.FoodRepository;
 import com.example.caloriecalculator.repositories.UserRepository;
 import com.example.caloriecalculator.service.interfaces.ICalorieIntakeService;
-import com.mysql.cj.exceptions.NumberOutOfRange;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 
 @Service
 @AllArgsConstructor
@@ -56,13 +57,12 @@ public class CalorieIntakeService implements ICalorieIntakeService {
     @Override
     public User updateCalorieIntake(Integer intake_id, Double quantityOfIntake) {
         log.info("User={} is updating a calorie intake id={} new quantity={}!", SecurityContextHolder.getContext().getAuthentication().getName(), intake_id, quantityOfIntake);
-        CalorieIntake calorieIntake = calorieIntakeRepository.getReferenceById(intake_id);
-        if (quantityOfIntake <= 0) {
-            throw new NumberOutOfRange("The quantity has to be greater than 0!");
-        }
-        calorieIntake.setQuantityOfFood(quantityOfIntake);
-        calorieIntakeRepository.save(calorieIntake);
-        return getUser(calorieIntake.getUser().getId());
+        User user = userRepository.findUserByCalorieIntake(intake_id);
+        BiConsumer<Double, CalorieIntake> consumer = (quantity, calorieIntake) -> calorieIntake.setQuantityOfFood(quantity);
+        CalorieIntake calorieIntake = user.getCalorieIntakeList().stream().filter(intake -> Objects.equals(intake.getId(), intake_id))
+                .findAny().orElseThrow(() -> new NoSuchElementException("This calorie intake with id=" + intake_id + " is not exist!"));
+        consumer.accept(quantityOfIntake, calorieIntake);
+        return userRepository.save(user);
     }
 
     @Override
