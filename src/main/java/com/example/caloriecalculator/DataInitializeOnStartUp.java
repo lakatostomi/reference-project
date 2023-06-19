@@ -65,9 +65,7 @@ public class DataInitializeOnStartUp implements ApplicationListener<ContextRefre
     }
 
     @Transactional
-    Privilege createPrivilege(String name) {
-        return privilegeRepository.save(new Privilege(name));
-    }
+    Privilege createPrivilege(String name) {return privilegeRepository.save(new Privilege(name));}
 
     @Transactional
     Role saveRoles(Role role) {
@@ -80,7 +78,7 @@ public class DataInitializeOnStartUp implements ApplicationListener<ContextRefre
     }
 
     @Transactional
-    private User saveUser(User user) {
+    User saveUser(User user) {
         return userRepository.save(user);
     }
 

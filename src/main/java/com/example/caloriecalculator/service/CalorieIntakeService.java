@@ -27,13 +27,13 @@ public class CalorieIntakeService implements ICalorieIntakeService {
 
     @Override
     public CalorieIntake findIntakeById(Integer id) {
-        log.info("User={} is request a calorie intake with={}", SecurityContextHolder.getContext().getAuthentication().getName(), id);
+        log.info("User={} is request a calorie intake with={}", getAuthenticatedUsername(), id);
         return calorieIntakeRepository.findById(id).orElseThrow(() -> new NoSuchElementException("This calorie intake with id=" + id + " is not exist!"));
     }
 
     @Override
     public User saveUsersCalorieIntake(IntakeDTO intakeDTO) {
-        log.info("User={} is saving a new calorie intake={} ", SecurityContextHolder.getContext().getAuthentication().getName(), intakeDTO);
+        log.info("User={} is saving a new calorie intake={} ", getAuthenticatedUsername(), intakeDTO);
         User user = getUser(intakeDTO.getUserId());
         CalorieIntake calorieIntake = convertToCalorieIntake(intakeDTO, user);
         user.getCalorieIntakeList().add(calorieIntake);
@@ -56,7 +56,7 @@ public class CalorieIntakeService implements ICalorieIntakeService {
 
     @Override
     public User updateCalorieIntake(Integer intake_id, Double quantityOfIntake) {
-        log.info("User={} is updating a calorie intake id={} new quantity={}!", SecurityContextHolder.getContext().getAuthentication().getName(), intake_id, quantityOfIntake);
+        log.info("User={} is updating a calorie intake id={} new quantity={}!", getAuthenticatedUsername(), intake_id, quantityOfIntake);
         User user = userRepository.findUserByCalorieIntake(intake_id);
         BiConsumer<Double, CalorieIntake> consumer = (quantity, calorieIntake) -> calorieIntake.setQuantityOfFood(quantity);
         CalorieIntake calorieIntake = user.getCalorieIntakeList().stream().filter(intake -> Objects.equals(intake.getId(), intake_id))
@@ -67,8 +67,15 @@ public class CalorieIntakeService implements ICalorieIntakeService {
 
     @Override
     public void deleteCalorieIntake(Integer intake_id) {
-        log.info("User={} is deleting a calorie intake id={}", SecurityContextHolder.getContext().getAuthentication().getName(), intake_id);
+        log.info("User={} is deleting a calorie intake id={}", getAuthenticatedUsername(), intake_id);
         calorieIntakeRepository.deleteById(intake_id);
+    }
+
+    private String getAuthenticatedUsername() {
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            return SecurityContextHolder.getContext().getAuthentication().getName();
+        }
+        return "anonymous";
     }
 
 }

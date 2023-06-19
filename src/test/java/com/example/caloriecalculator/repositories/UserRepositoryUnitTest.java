@@ -12,18 +12,37 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Profile("test")
+@ActiveProfiles("test")
+//@Testcontainers
 public class UserRepositoryUnitTest {
 
     @Autowired
     private UserRepository userRepository;
 
+    /*@Container
+    private static final MySQLContainer mySQLContainer = new MySQLContainer<>("mysql:8.0.30")
+            .withDatabaseName("testContainer")
+            .withUsername("root")
+            .withPassword("test")
+            .withInitScript("schema.sql");
+
+    @DynamicPropertySource
+    private static void setupProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", mySQLContainer::getUsername);
+        registry.add("spring.datasource.password", mySQLContainer::getPassword);
+    }*/
 
     @BeforeEach
     public void setup() {

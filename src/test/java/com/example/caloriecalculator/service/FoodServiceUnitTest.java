@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ class FoodServiceUnitTest {
 
     private List<Food> foods;
 
+
     @BeforeEach
     void setUp() {
         this.foods = new ArrayList<>();
@@ -47,6 +49,7 @@ class FoodServiceUnitTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", password = "admin")
     void findAll() {
         when(foodRepository.findAll()).thenReturn(foods);
         List<Food> foodList = foodService.findAll();

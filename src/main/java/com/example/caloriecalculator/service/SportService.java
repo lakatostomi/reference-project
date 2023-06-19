@@ -26,7 +26,7 @@ public class SportService implements ISportService {
 
     @Override
     public User saveUsersSport(SportDTO sportDTO) {
-        log.info("User={} is saving a new sport activity={}", SecurityContextHolder.getContext().getAuthentication().getName(), sportDTO);
+        log.info("User={} is saving a new sport activity={}", getAuthenticatedUsername(), sportDTO);
         User user = getUser(sportDTO.getUser_id());
         user.getSportList().add(convertToSport(sportDTO, user));
         return userRepository.save(user);
@@ -49,7 +49,7 @@ public class SportService implements ISportService {
 
     @Override
     public User updateSport(Integer sport_id, Double burned_calories) {
-        log.info("User={} is updating a sport activity with id={} new burned calories={}", SecurityContextHolder.getContext().getAuthentication().getName(),
+        log.info("User={} is updating a sport activity with id={} new burned calories={}", getAuthenticatedUsername(),
                 sport_id, burned_calories);
         User user = userRepository.findUserBySport(sport_id);
         BiConsumer<Double, Sport> consumer = (burnedCal, sport) -> sport.setBurnedCalories(burnedCal);
@@ -61,13 +61,20 @@ public class SportService implements ISportService {
 
     @Override
     public Sport findSportById(Integer id) {
-        log.info("User={} is requesting a sport activity with id={}", SecurityContextHolder.getContext().getAuthentication().getName(), id);
+        log.info("User={} is requesting a sport activity with id={}", getAuthenticatedUsername(), id);
         return sportRepository.findById(id).orElseThrow(() -> new NoSuchElementException("This sport with id=" + id + " is not exist!"));
     }
 
     @Override
     public void deleteSport(Integer id) {
-        log.info("User={} is deleting a sport activity with id={}", SecurityContextHolder.getContext().getAuthentication().getName(), id);
+        log.info("User={} is deleting a sport activity with id={}", getAuthenticatedUsername(), id);
         sportRepository.deleteById(id);
+    }
+
+    private String getAuthenticatedUsername() {
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            return SecurityContextHolder.getContext().getAuthentication().getName();
+        }
+        return "anonymous";
     }
 }
