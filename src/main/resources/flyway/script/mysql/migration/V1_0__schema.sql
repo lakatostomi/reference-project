@@ -1,7 +1,8 @@
+CREATE SCHEMA IF NOT EXISTS `caloriecalculator` ;
 DROP TABLE IF EXISTS `food`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `food` (
+CREATE TABLE `caloriecalculator`.`food` (
                         `id` int NOT NULL AUTO_INCREMENT,
                         `calories` double NOT NULL,
                         `carbs` double NOT NULL,
@@ -13,16 +14,16 @@ CREATE TABLE `food` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
-LOCK TABLES `food` WRITE;
-/*!40000 ALTER TABLE `food` DISABLE KEYS */;
-/*!40000 ALTER TABLE `food` ENABLE KEYS */;
+LOCK TABLES `caloriecalculator`.`food` WRITE;
+/*!40000 ALTER TABLE `caloriecalculator`.`food` DISABLE KEYS */;
+/*!40000 ALTER TABLE `caloriecalculator`.`food` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
 DROP TABLE IF EXISTS `privilege`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `privilege` (
+CREATE TABLE `caloriecalculator`.`privilege` (
                              `id` int NOT NULL AUTO_INCREMENT,
                              `name` varchar(255) DEFAULT NULL,
                              PRIMARY KEY (`id`)
@@ -30,16 +31,16 @@ CREATE TABLE `privilege` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
-LOCK TABLES `privilege` WRITE;
-/*!40000 ALTER TABLE `privilege` DISABLE KEYS */;
-/*!40000 ALTER TABLE `privilege` ENABLE KEYS */;
+LOCK TABLES `caloriecalculator`.`privilege` WRITE;
+/*!40000 ALTER TABLE `caloriecalculator`.`privilege` DISABLE KEYS */;
+/*!40000 ALTER TABLE `caloriecalculator`.`privilege` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
 DROP TABLE IF EXISTS `role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `role` (
+CREATE TABLE `caloriecalculator`.`role` (
                         `id` int NOT NULL AUTO_INCREMENT,
                         `name` varchar(255) DEFAULT NULL,
                         PRIMARY KEY (`id`)
@@ -47,16 +48,16 @@ CREATE TABLE `role` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
-LOCK TABLES `role` WRITE;
-/*!40000 ALTER TABLE `role` DISABLE KEYS */;
-/*!40000 ALTER TABLE `role` ENABLE KEYS */;
+LOCK TABLES `caloriecalculator`.`role` WRITE;
+/*!40000 ALTER TABLE `caloriecalculator`.`role` DISABLE KEYS */;
+/*!40000 ALTER TABLE `caloriecalculator`.`role` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
 DROP TABLE IF EXISTS `roles_privileges`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `roles_privileges` (
+CREATE TABLE `caloriecalculator`.`roles_privileges` (
   `role_id` int DEFAULT NULL,
   `privilege_id` int DEFAULT NULL,
   KEY `FK9h2vewsqh8luhfq71xokh4who` (`role_id`),
@@ -67,15 +68,15 @@ CREATE TABLE `roles_privileges` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
-LOCK TABLES `roles_privileges` WRITE;
-/*!40000 ALTER TABLE `roles_privileges` DISABLE KEYS */;
-/*!40000 ALTER TABLE `roles_privileges` ENABLE KEYS */;
+LOCK TABLES `caloriecalculator`.`roles_privileges` WRITE;
+/*!40000 ALTER TABLE `caloriecalculator`.`roles_privileges` DISABLE KEYS */;
+/*!40000 ALTER TABLE `caloriecalculator`.`roles_privileges` ENABLE KEYS */;
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `user_account`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user_account` (
+CREATE TABLE `caloriecalculator`.`user_account` (
                                 `id` int NOT NULL AUTO_INCREMENT,
                                 `activity` int DEFAULT NULL,
                                 `age` int DEFAULT NULL,
@@ -92,14 +93,14 @@ CREATE TABLE `user_account` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
-LOCK TABLES `user_account` WRITE;
-/*!40000 ALTER TABLE `user_account` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user_account` ENABLE KEYS */;
+LOCK TABLES `caloriecalculator`.`user_account` WRITE;
+/*!40000 ALTER TABLE `caloriecalculator`.`user_account` DISABLE KEYS */;
+/*!40000 ALTER TABLE `caloriecalculator`.`user_account` ENABLE KEYS */;
 UNLOCK TABLES;
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `calorie_intake` (
+CREATE TABLE `caloriecalculator`.`calorie_intake` (
                                   `id` int NOT NULL AUTO_INCREMENT,
                                   `quantity_of_food` double DEFAULT NULL,
                                   `time_of_intake` datetime(6) DEFAULT NULL,
@@ -113,16 +114,16 @@ CREATE TABLE `calorie_intake` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
-LOCK TABLES `calorie_intake` WRITE;
-/*!40000 ALTER TABLE `calorie_intake` DISABLE KEYS */;
-/*!40000 ALTER TABLE `calorie_intake` ENABLE KEYS */;
+LOCK TABLES `caloriecalculator`.`calorie_intake` WRITE;
+/*!40000 ALTER TABLE `caloriecalculator`.`calorie_intake` DISABLE KEYS */;
+/*!40000 ALTER TABLE `caloriecalculator`.`calorie_intake` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
 DROP TABLE IF EXISTS `sport`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `sport` (
+CREATE TABLE `caloriecalculator`.`sport` (
   `id` int NOT NULL AUTO_INCREMENT,
   `burned_calories` double DEFAULT NULL,
   `name_of_activity` varchar(255) DEFAULT NULL,
@@ -135,16 +136,16 @@ CREATE TABLE `sport` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
-LOCK TABLES `sport` WRITE;
-/*!40000 ALTER TABLE `sport` DISABLE KEYS */;
-/*!40000 ALTER TABLE `sport` ENABLE KEYS */;
+LOCK TABLES `caloriecalculator`.`sport` WRITE;
+/*!40000 ALTER TABLE `caloriecalculator`.`sport` DISABLE KEYS */;
+/*!40000 ALTER TABLE `caloriecalculator`.`sport` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
 DROP TABLE IF EXISTS `users_roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `users_roles` (
+CREATE TABLE `caloriecalculator`.`users_roles` (
   `user_id` int DEFAULT NULL,
   `role_id` int DEFAULT NULL,
   KEY `FKt4v0rrweyk393bdgt107vdx0x` (`role_id`),
@@ -155,16 +156,16 @@ CREATE TABLE `users_roles` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
-LOCK TABLES `users_roles` WRITE;
-/*!40000 ALTER TABLE `users_roles` DISABLE KEYS */;
-/*!40000 ALTER TABLE `users_roles` ENABLE KEYS */;
+LOCK TABLES `caloriecalculator`.`users_roles` WRITE;
+/*!40000 ALTER TABLE `caloriecalculator`.`users_roles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `caloriecalculator`.`users_roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
 DROP TABLE IF EXISTS `verification_token`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `verification_token` (
+CREATE TABLE `caloriecalculator`.`verification_token` (
   `id` int NOT NULL AUTO_INCREMENT,
   `expiry_date` datetime DEFAULT NULL,
   `token` varchar(255) DEFAULT NULL,
@@ -176,17 +177,9 @@ CREATE TABLE `verification_token` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
-LOCK TABLES `verification_token` WRITE;
-/*!40000 ALTER TABLE `verification_token` DISABLE KEYS */;
-/*!40000 ALTER TABLE `verification_token` ENABLE KEYS */;
+LOCK TABLES `caloriecalculator`.`verification_token` WRITE;
+/*!40000 ALTER TABLE `caloriecalculator`.`verification_token` DISABLE KEYS */;
+/*!40000 ALTER TABLE `caloriecalculator`.`verification_token` ENABLE KEYS */;
 UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 

@@ -1,0 +1,10 @@
+INSERT INTO privilege VALUES (1, 'READ_PRIVILEGE');
+INSERT INTO privilege VALUES (2, 'WRITE_PRIVILEGE');
+
+INSERT INTO role VALUES (1, 'ROLE_USER');
+INSERT INTO role VALUES (2, 'ROLE_ADMIN');
+
+INSERT INTO roles_privileges VALUES (1, 1);
+INSERT INTO roles_privileges VALUES (2, 1);
+INSERT INTO roles_privileges VALUES (2, 2);
+

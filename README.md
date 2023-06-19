@@ -14,7 +14,7 @@ Some additional information:
 - Delivering states through HATEOAS
 - Tests running in testcontainers (MySQL) (not all of test class has developed - only 2 controller test, 1 service test, 2 repository test where queries have created with @Query annotation and 1 integration test) 
 - H2 DB in dev environment and MySQL DB in prod environment
-- 
+- Project documentation available at `/swagger-ui/index.html`
 
 I permanently develop this API with further functions...I'm opened to get advices and feedbacks from anyone who would like to help me to become a better developer :)
 
