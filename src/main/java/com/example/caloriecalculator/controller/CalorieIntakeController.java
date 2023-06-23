@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/rest/user/intake")
@@ -35,9 +35,9 @@ public class CalorieIntakeController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Saving is successful",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {User.class, EntityModel.class}))),
             @ApiResponse(responseCode = "400", description = "The User is not exists, Path-variable is missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @PostMapping
     public ResponseEntity<EntityModel<User>> saveNewCalorieIntake(@Parameter(description = "Contains the values of calorie intake") @RequestBody @Valid IntakeDTO intakeDTO) {
         User user = intakeService.saveUsersCalorieIntake(intakeDTO);
@@ -48,9 +48,9 @@ public class CalorieIntakeController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Updating is successful",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {User.class, EntityModel.class}))),
             @ApiResponse(responseCode = "400", description = "The Intake is not exists, RequestParams are missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @PutMapping
     public ResponseEntity<EntityModel<User>> updateCalorieIntake(@Parameter(description = "The ID of calorie intake") @RequestParam Integer id,
                                                                  @Parameter(description = "The new value of intake") @RequestParam Double quantity) {
@@ -62,9 +62,9 @@ public class CalorieIntakeController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Calorie intake is exists",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(implementation = CalorieIntake.class))),
             @ApiResponse(responseCode = "400", description = "The Intake is not exists, Path-variable is missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @GetMapping("/{id}")
     public ResponseEntity<CalorieIntake> findIntakeById(@Parameter(description = "The ID of intake") @PathVariable Integer id) {
         return ResponseEntity.ok(intakeService.findIntakeById(id));
@@ -74,9 +74,9 @@ public class CalorieIntakeController {
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "Deleting is successful",
             content = @Content()),
             @ApiResponse(responseCode = "400", description = "The Intake is not exists, Path-variable is missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCalorieIntake(@Parameter(description = "The ID of calorie intake") @PathVariable Integer id) {
         intakeService.deleteCalorieIntake(id);

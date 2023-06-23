@@ -6,6 +6,7 @@ import com.example.caloriecalculator.model.User;
 import com.example.caloriecalculator.repositories.SportRepository;
 import com.example.caloriecalculator.repositories.UserRepository;;
 import com.example.caloriecalculator.service.interfaces.ISportService;
+import com.mysql.cj.exceptions.NumberOutOfRange;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,6 +52,9 @@ public class SportService implements ISportService {
     public User updateSport(Integer sport_id, Double burned_calories) {
         log.info("User={} is updating a sport activity with id={} new burned calories={}", getAuthenticatedUsername(),
                 sport_id, burned_calories);
+        if (burned_calories <= 0) {
+            throw new NumberOutOfRange("The calories has to be greater than 0!");
+        }
         User user = userRepository.findUserBySport(sport_id);
         BiConsumer<Double, Sport> consumer = (burnedCal, sport) -> sport.setBurnedCalories(burnedCal);
         Sport sport = user.getSportList().stream().filter(sport1 -> Objects.equals(sport_id, sport1.getId()))
@@ -68,7 +72,12 @@ public class SportService implements ISportService {
     @Override
     public void deleteSport(Integer id) {
         log.info("User={} is deleting a sport activity with id={}", getAuthenticatedUsername(), id);
-        sportRepository.deleteById(id);
+        if (sportRepository.existsById(id)) {
+            sportRepository.deleteById(id);
+            log.info("Deleting has successfully finished!");
+        } else {
+            throw new NoSuchElementException("Sport activity with id=" + id + " is not exist!");
+        }
     }
 
     private String getAuthenticatedUsername() {

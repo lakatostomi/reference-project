@@ -1,0 +1,9 @@
+services:
+  mysqldb:
+    container_name: mysqldb-dev
+    image: mysql:8.0.30
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=caloriecalculator
+    ports:
+      - 3307:3306

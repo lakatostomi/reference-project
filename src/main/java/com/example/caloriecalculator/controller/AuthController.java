@@ -31,9 +31,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 @AllArgsConstructor
 @RestController
@@ -54,8 +54,8 @@ public class AuthController {
     @ApiResponses(value = {@ApiResponse(responseCode = "202", description = "1st step of registration is finished",
             content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "400", description = "Field/Object validation fails, Email already exists, Request body is missing"
-                    , content = @Content(mediaType = "application/json"))})
-    @PostMapping(value = "/registration", produces = "application/json")
+                    , content = @Content(mediaType = "application/problem+json"))})
+    @PostMapping(value = "/registration", produces = {"application/json", "application/problem+json"})
     public ResponseEntity<Object> registerUser(@Parameter(description = "Contains the necessary fields for registration")
                                                @Valid @RequestBody RegistrationDTO registrationDTO, HttpServletRequest request) {
         log.info("New registration process with: " + registrationDTO.toString());
@@ -77,8 +77,8 @@ public class AuthController {
     @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Registration has confirmed",
             content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "400", description = "Token is not valid, Request param is missing"
-                    , content = @Content(mediaType = "application/json"))})
-    @GetMapping(value = "/registration/confirm", produces = "application/json")
+                    , content = @Content(mediaType = "application/problem+json"))})
+    @GetMapping(value = "/registration/confirm", produces = {"application/json", "application/problem+json"})
     public ResponseEntity<Object> confirmRegistration(@Parameter(description = "Contains the token that previously has sent through email")
                                                       @RequestParam("token") String token) {
         VerificationToken verificationToken = tokenService.verifyToken(token);
@@ -96,9 +96,9 @@ public class AuthController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "When login is successful",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {User.class, EntityModel.class}))),
             @ApiResponse(responseCode = "400", description = "Field validation fails, Request body is missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Authentication fails"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @PostMapping(value = "/login")
     public ResponseEntity<EntityModel<User>> login(@Parameter(description = "Contains the necessary fields for login")
                                                    @Valid @RequestBody LoginRequestDTO loginRequestDTO, HttpServletResponse response) {

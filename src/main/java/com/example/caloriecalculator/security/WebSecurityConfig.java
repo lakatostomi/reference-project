@@ -14,6 +14,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,21 +47,25 @@ public class WebSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web)-> web.ignoring().antMatchers("/h2-console/**");
+        return (web)-> web.ignoring().requestMatchers("/h2-console/**");
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors().and().csrf().disable().authorizeHttpRequests()
-                .mvcMatchers("/api/rest/auth/registration").permitAll()
-                .mvcMatchers("/api/rest/auth/registration/confirm").permitAll()
-                .mvcMatchers("/api/rest/auth/login").permitAll()
-                .mvcMatchers("/h2-console/**").permitAll()
-                .mvcMatchers("/swagger-ui/**").permitAll()
-                .mvcMatchers("/v3/api-docs/**").permitAll()
-                .anyRequest().authenticated().and().headers().frameOptions().disable().and()
-                .exceptionHandling().authenticationEntryPoint(authEntryPoint).accessDeniedHandler(accessDeniedHandler).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        httpSecurity.cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/rest/auth/registration").permitAll()
+                .requestMatchers("/api/rest/auth/registration/confirm").permitAll()
+                .requestMatchers("/api/rest/auth/login").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll().requestMatchers("/swagger").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
+                .anyRequest().authenticated())
+                .headers(headers-> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .exceptionHandling(exHandConfig-> exHandConfig.authenticationEntryPoint(authEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler))
+                .sessionManagement(sessionManagement-> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }

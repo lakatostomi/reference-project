@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @AllArgsConstructor
 @RestController
@@ -33,9 +33,9 @@ public class SportController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Saving is successful",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {User.class, EntityModel.class}))),
             @ApiResponse(responseCode = "400", description = "Fields are not valid, RequestBody is missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @PostMapping
     public ResponseEntity<EntityModel<User>> saveSportActivity(@Parameter(description = "Contains values of sport activity") @RequestBody @Valid SportDTO sportDTO) {
         User user = sportService.saveUsersSport(sportDTO);
@@ -46,9 +46,9 @@ public class SportController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Sport activity is exists",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(implementation = Sport.class))),
             @ApiResponse(responseCode = "400", description = "Path-variable is missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @GetMapping("/{id}")
     public ResponseEntity<Sport> findSportById(@Parameter(description = "The ID of sport activity") @PathVariable Integer id) {
         return new ResponseEntity<>(sportService.findSportById(id), HttpStatus.OK);
@@ -58,9 +58,9 @@ public class SportController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Updating is successful",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {User.class, EntityModel.class}))),
             @ApiResponse(responseCode = "400", description = "RequestParams are missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @PutMapping()
     public ResponseEntity<EntityModel<User>> updateSportActivity(@Parameter(description = "The ID of sport") @RequestParam("id") Integer id,
                                                                  @Parameter(description = "The new value of the activity") @RequestParam("calories") Double calories) {
@@ -72,9 +72,9 @@ public class SportController {
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "Deleting is successful",
             content = @Content()),
             @ApiResponse(responseCode = "400", description = "Path-variable is missing, sport is not exists"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSportActivity(@Parameter(description = "The ID of sport activity") @PathVariable Integer id) {
         sportService.deleteSport(id);

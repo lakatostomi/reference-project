@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.data.domain.Example;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,21 +66,35 @@ public class DataInitializeOnStartUp implements ApplicationListener<ContextRefre
     }
 
     @Transactional
-    Privilege createPrivilege(String name) {return privilegeRepository.save(new Privilege(name));}
+    Privilege createPrivilege(String name) {
+        if (!privilegeRepository.exists(Example.of(new Privilege(name)))) {
+        return privilegeRepository.save(new Privilege(name));
+        }
+        return privilegeRepository.findOne(Example.of(new Privilege(name))).get();
+    }
 
     @Transactional
     Role saveRoles(Role role) {
-        return roleRepository.save(role);
+        if (!roleRepository.exists(Example.of(role))) {
+            return roleRepository.save(role);
+        }
+        return roleRepository.findByName(role.getName());
     }
 
     @Transactional
     Food saveFoods(Food food) {
-        return foodRepository.save(food);
+        if (!foodRepository.exists(Example.of(food))) {
+            return foodRepository.save(food);
+        }
+        return foodRepository.findOne(Example.of(food)).get();
     }
 
     @Transactional
     User saveUser(User user) {
-        return userRepository.save(user);
+        if (!userRepository.existsByEmail(user.getEmail())) {
+            return userRepository.save(user);
+        }
+        return null;
     }
 
 }

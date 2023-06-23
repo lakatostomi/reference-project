@@ -9,6 +9,7 @@ services:
       - "8080:8080"
     environment:
       - spring.datasource.url=jdbc:mysql://mysqldb:3306/$MYSQL_DB
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - test-network
     links:

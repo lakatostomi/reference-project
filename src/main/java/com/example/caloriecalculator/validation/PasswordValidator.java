@@ -2,8 +2,8 @@ package com.example.caloriecalculator.validation;
 
 import org.passay.*;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 
 public class PasswordValidator implements ConstraintValidator<ValidPassword, String> {

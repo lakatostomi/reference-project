@@ -20,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
+import jakarta.annotation.security.RolesAllowed;
 
 @Slf4j
 @AllArgsConstructor
@@ -37,9 +37,9 @@ public class UserController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "The User has found",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {User.class, EntityModel.class}))),
             @ApiResponse(responseCode = "400", description = "The User is not exist, Path-variable is missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<User>> findUserById(@Parameter(description = "The ID of the User") @PathVariable int id) {
         return new ResponseEntity<>(modelAssembler.toModel(userService.findUserById(id)), HttpStatus.OK);
@@ -49,9 +49,9 @@ public class UserController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Update is successful",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {User.class, EntityModel.class}))),
             @ApiResponse(responseCode = "400", description = "The User is not exists, Path-variable or request body is missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @PutMapping("/{id}")
     public ResponseEntity<EntityModel<User>> updateUserData(@Parameter(description = "The ID of User") @PathVariable int id,
                                                             @Parameter(description = "Contains the values of User") @RequestBody ProfileUpdateDTO profileUpdateDTO) {
@@ -60,11 +60,11 @@ public class UserController {
 
     @Operation(summary = "Deleting existing User from DB")
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "Delete is successful",
-            content = @Content(mediaType = "application/json")),
+            content = @Content()),
             @ApiResponse(responseCode = "400", description = "The User not exists, Path-variable is missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@Parameter(description = "The ID of User") @PathVariable int id) {
         userService.deleteUser(id);
@@ -75,9 +75,9 @@ public class UserController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Collection model successfully created",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {User.class, CollectionModel.class}))),
             @ApiResponse(responseCode = "403", description = "Sending request to the endpoint with USER_ROLE"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @RolesAllowed("ADMIN")
     @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<User>>> getAllUsers() {

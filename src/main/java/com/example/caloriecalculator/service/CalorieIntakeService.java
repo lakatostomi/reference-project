@@ -7,6 +7,7 @@ import com.example.caloriecalculator.repositories.CalorieIntakeRepository;
 import com.example.caloriecalculator.repositories.FoodRepository;
 import com.example.caloriecalculator.repositories.UserRepository;
 import com.example.caloriecalculator.service.interfaces.ICalorieIntakeService;
+import com.mysql.cj.exceptions.NumberOutOfRange;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,6 +58,9 @@ public class CalorieIntakeService implements ICalorieIntakeService {
     @Override
     public User updateCalorieIntake(Integer intake_id, Double quantityOfIntake) {
         log.info("User={} is updating a calorie intake id={} new quantity={}!", getAuthenticatedUsername(), intake_id, quantityOfIntake);
+        if (quantityOfIntake <= 0) {
+            throw new NumberOutOfRange("The quantity has to be greater than 0!");
+        }
         User user = userRepository.findUserByCalorieIntake(intake_id);
         BiConsumer<Double, CalorieIntake> consumer = (quantity, calorieIntake) -> calorieIntake.setQuantityOfFood(quantity);
         CalorieIntake calorieIntake = user.getCalorieIntakeList().stream().filter(intake -> Objects.equals(intake.getId(), intake_id))
@@ -68,7 +72,11 @@ public class CalorieIntakeService implements ICalorieIntakeService {
     @Override
     public void deleteCalorieIntake(Integer intake_id) {
         log.info("User={} is deleting a calorie intake id={}", getAuthenticatedUsername(), intake_id);
-        calorieIntakeRepository.deleteById(intake_id);
+        if (calorieIntakeRepository.existsById(intake_id)) {
+            calorieIntakeRepository.deleteById(intake_id);
+        } else {
+            throw new NoSuchElementException("This calorie intake with id=" + intake_id + " is not exist!");
+        }
     }
 
     private String getAuthenticatedUsername() {

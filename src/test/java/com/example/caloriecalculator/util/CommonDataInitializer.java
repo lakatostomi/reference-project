@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
@@ -35,7 +35,7 @@ public class CommonDataInitializer {
 
     public CommonDataInitializer() {
     }
-
+    @Transactional
     public void initData() {
         log.info("Initializing dummy data has started!");
         Privilege writePrivilege = new Privilege("WRITE_PRIVILEGE");

@@ -5,14 +5,14 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.caloriecalculator.util.HttpResponse;
 import com.example.caloriecalculator.util.RestResponseUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
@@ -57,12 +57,11 @@ public class Auth0JwtUtils {
             return decodedJWT;
         } catch (JWTVerificationException ex) {
             log.warn("Token verification failure", ex);
-            HttpResponse httpResponse = new HttpResponse(HttpStatus.UNAUTHORIZED.value(),
-                            HttpStatus.UNAUTHORIZED,
-                            ex.getMessage());
+            response.setContentType("application/problem+json");
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json");
-            RestResponseUtil.sendHttpResponse(response, httpResponse);
+            ProblemDetail problemDetail = RestResponseUtil.createProblemDetail(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+
+            RestResponseUtil.sendHttpResponse(response, problemDetail);
         }
         return null;
     }

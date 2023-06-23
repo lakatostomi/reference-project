@@ -1,29 +1,27 @@
 package com.example.caloriecalculator.integration;
 
+import com.example.caloriecalculator.MyTestConfigClass;
 import com.example.caloriecalculator.dto.IntakeDTO;
 import com.example.caloriecalculator.dto.LoginRequestDTO;
 import com.example.caloriecalculator.dto.RegistrationDTO;
 import com.example.caloriecalculator.model.Food;
-import com.example.caloriecalculator.util.CommonDataInitializer;
 import io.restassured.authentication.OAuthSignature;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.with;
 import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@Import(MyTestConfigClass.class)
 public class CCIntegrationTestRestAssured {
 
     @LocalServerPort
@@ -35,6 +33,7 @@ public class CCIntegrationTestRestAssured {
     void initUrl() {
         url = "http://localhost:" + port + "/api/rest";
     }
+
 
     @BeforeEach
     void setUp() {
@@ -50,7 +49,7 @@ public class CCIntegrationTestRestAssured {
         RegistrationDTO registrationDTO = new RegistrationDTO("John", "john@john.com", "jhRR12&&", "jhRR12&&&");
         with().contentType("application/json").body(registrationDTO).when().post(url + "/auth/registration")
                 .then().statusCode(400).log().ifError()
-                .assertThat().body("message", equalTo("Passwords are not matches!"));
+                .assertThat().body("detail", equalTo("Passwords are not matches!"));
     }
 
     @Test
@@ -58,7 +57,7 @@ public class CCIntegrationTestRestAssured {
         RegistrationDTO registrationDTO = new RegistrationDTO("John", "john@john.com", "jhRR12", "jhRR12");
         with().contentType("application/json").body(registrationDTO).when().post(url + "/auth/registration")
                 .then().statusCode(400).log().ifError()
-                .assertThat().body("message", equalTo("password field: [Password must be at least 8 characters in length., Password must contain at least 2 special characters.],"));
+                .assertThat().body("detail", equalTo("password field: [Password must be at least 8 characters in length., Password must contain at least 2 special characters.],"));
     }
 
     @Test
@@ -74,7 +73,7 @@ public class CCIntegrationTestRestAssured {
         RegistrationDTO registrationDTO = new RegistrationDTO("Tom", "tom@gmail.com", "jhRR12$$", "jhRR12$$");
         with().contentType("application/json").body(registrationDTO).when().post(url + "/auth/registration")
                 .then().statusCode(400).log().ifError()
-                .assertThat().body("message", equalTo("An account for that email already exists: [" + registrationDTO.getEmail() + "]!"));
+                .assertThat().body("detail", equalTo("An account for that email already exists: [" + registrationDTO.getEmail() + "]!"));
     }
 
     @Test
@@ -89,14 +88,14 @@ public class CCIntegrationTestRestAssured {
     void testConfirmReg_whenTokenNotValid_thanBadRequest() {
         String token = "thisisnotavalidtoken";
         with().param("token", token).when().get(url + "/auth/registration/confirm").then().statusCode(400)
-                .log().ifError().assertThat().body("message", equalTo("The token is not exist!"));
+                .log().ifError().assertThat().body("detail", equalTo("The token is not exist!"));
     }
 
     @Test
     void testConfirmReg_whenTokenExpired_thanBadRequest() {
         String token = "e6e38bed-dafe-4af2-a988-015424e69954";
         with().param("token", token).when().get(url + "/auth/registration/confirm").then().statusCode(400)
-                .log().ifError().assertThat().body("message", equalTo("Token has expired!"));
+                .log().ifError().assertThat().body("detail", equalTo("Token has expired!"));
     }
 
     @Test
@@ -108,17 +107,17 @@ public class CCIntegrationTestRestAssured {
 
     @Test
     void testLogin_whenValidAccount_thanOK() {
-        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("tom@gmail.com", "1111");
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("peter@gmail.com", "2222");
         with().contentType("application/json").body(loginRequestDTO).when().post(url + "/auth/login").then()
                 .statusCode(200).log().ifError()
                 .assertThat().header("Authorization", isA(String.class))
-                .assertThat().body("name", equalTo("Tom"));
+                .assertThat().body("name", equalTo("Peter"));
     }
 
     @Test
     void testRequestMethodNotSupported_whenCallAnEndpointThatNotExists_thanMethodNotAllowed() {
         //login with an existing account to get bearer token for authorization
-        String token = executeLoginToGetToken("tom@gmail.com", "1111");
+        String token = executeLoginToGetToken("admin@gmail.com", "3333");
 
         given().auth().oauth2(token, OAuthSignature.HEADER).when().post(url + "/user/savesport").then().statusCode(405);
     }
@@ -126,7 +125,7 @@ public class CCIntegrationTestRestAssured {
 
     @Test
     void testUserRole_whenUserInvokeRestrictedEndpoint_thanForbidden() {
-        String token = executeLoginToGetToken("tom@gmail.com", "1111");
+        String token = executeLoginToGetToken("peter@gmail.com", "2222");
 
         //list all users
         given().auth().oauth2(token, OAuthSignature.HEADER).when().get(url + "/user")
@@ -161,9 +160,9 @@ public class CCIntegrationTestRestAssured {
                 .with().contentType("application/json")
                 .body(intakeDTO).post(url + "/user/intake").then()
                 .statusCode(400).log().ifError()
-                .body("message", containsString("foodId field: The value of the field has to be positive!"))
-                .body("message", containsString("userId field: The value of the field has to be positive!"))
-                .body("message", containsString("quantityOfFood field: The field can not be null!"));
+                .body("detail", containsString("foodId field: The value of the field has to be positive!"))
+                .body("detail", containsString("userId field: The value of the field has to be positive!"))
+                .body("detail", containsString("quantityOfFood field: The field can not be null!"));
     }
 
     @Test
@@ -193,7 +192,7 @@ public class CCIntegrationTestRestAssured {
         given().auth().oauth2(token, OAuthSignature.HEADER)
                 .with().contentType("application/json").queryParams("id", "1", "quantity", "0")
                 .put(url + "/user/intake").then().statusCode(400)
-                .log().ifError().body("message", equalTo("The quantity has to be greater than 0!"));
+                .log().ifError().body("detail", equalTo("The quantity has to be greater than 0!"));
     }
 
     @Test
@@ -227,11 +226,11 @@ public class CCIntegrationTestRestAssured {
         given().auth().oauth2(token, OAuthSignature.HEADER)
                 .with().contentType("application/json").pathParam("id", "14")
                 .delete(url + "/user/intake/{id}").then().statusCode(400).log().ifError()
-                .assertThat().body("message", equalTo("No class com.example.caloriecalculator.model.CalorieIntake entity with id 14 exists!"));
+                .assertThat().body("detail", equalTo("This calorie intake with id=14 is not exist!"));
     }
 
     @Test
-    void testOrphanRemove_whenDeleteUser_thanRemoveIntakesAndSports() {
+    void testOrphanRemoval_whenDeleteUser_thanRemoveIntakesAndSports() {
         String token = executeLoginToGetToken("tom@gmail.com", "1111");
         //delete user account
         given().auth().oauth2(token, OAuthSignature.HEADER)
@@ -241,12 +240,12 @@ public class CCIntegrationTestRestAssured {
         given().auth().oauth2(token, OAuthSignature.HEADER)
                 .with().contentType("application/json").pathParam("id", "1")
                 .get(url + "/user/intake/{id}").then().statusCode(400).log().ifError()
-                .assertThat().body("message", equalTo("This calorie intake with id=1 is not exist!"));
-        //send request to get a sport acticity of user
+                .assertThat().body("detail", equalTo("This calorie intake with id=1 is not exist!"));
+        //send request to get a sport activity of user
         given().auth().oauth2(token, OAuthSignature.HEADER)
                 .with().contentType("application/json").pathParam("id", "1")
                 .get(url + "/user/sport/{id}").then().statusCode(400).log().ifError()
-                .assertThat().body("message", equalTo("This sport with id=1 is not exist!"));
+                .assertThat().body("detail", equalTo("This sport with id=1 is not exist!"));
     }
 
     private String executeLoginToGetToken(String email, String password) {
@@ -254,15 +253,5 @@ public class CCIntegrationTestRestAssured {
         return with().contentType("application/json").body(loginRequestDTO).when().post(url + "/auth/login")
                 .then().statusCode(200)
                 .log().ifError().extract().header("Authorization").substring("Bearer ".length());
-    }
-
-    @TestConfiguration
-    static class TestConfigClass {
-
-        @Transactional
-        @Bean(initMethod = "initData")
-        public CommonDataInitializer commonDataInitializer() {
-            return new CommonDataInitializer();
-        }
     }
 }

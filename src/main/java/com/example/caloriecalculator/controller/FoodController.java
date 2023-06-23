@@ -21,7 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @AllArgsConstructor
 @RestController
@@ -38,7 +38,7 @@ public class FoodController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Creating collection-model was successful",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {Food.class, CollectionModel.class}))),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<Food>>> findAll() {
         CollectionModel<EntityModel<Food>> collectionModel = modelAssembler.toCollectionModel(foodService.findAll());
@@ -49,9 +49,9 @@ public class FoodController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Food is exists",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {Food.class, EntityModel.class}))),
             @ApiResponse(responseCode = "400", description = "Path-variable is missing"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json"))})
+                    , content = @Content(mediaType = "application/problem+json"))})
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<Food>> findById(@Parameter(description = "The ID of Food") @PathVariable int id) {
         EntityModel<Food> food = modelAssembler.toModel(foodService.findFoodById(id));
@@ -62,11 +62,11 @@ public class FoodController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Saving is successful",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {Food.class, EntityModel.class}))),
             @ApiResponse(responseCode = "403", description = "Sending request to the endpoint with READ_PRIVILEGE"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "400", description = "Fields are not valid, RequestBody is missing",
-                    content = @Content(mediaType = "application/json"))})
+                    content = @Content(mediaType = "application/problem+json"))})
     @PreAuthorize("hasAuthority('WRITE_PRIVILEGE')")
     @PostMapping
     public ResponseEntity<EntityModel<Food>> saveFood(@Parameter(description = "Contains values of Food") @Valid @RequestBody FoodDTO foodDTO) {
@@ -78,11 +78,11 @@ public class FoodController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Updating is successful",
             content = @Content(mediaType = "application/hal+json", schema = @Schema(allOf = {Food.class, EntityModel.class}))),
             @ApiResponse(responseCode = "403", description = "Sending request to the endpoint with READ_PRIVILEGE"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "400", description = "Fields are not valid, RequestBody or Path-variable is missing",
-                    content = @Content(mediaType = "application/json"))})
+                    content = @Content(mediaType = "application/problem+json"))})
     @PreAuthorize("hasAuthority('WRITE_PRIVILEGE')")
     @PutMapping("/{id}")
     public ResponseEntity<EntityModel<Food>> updateFood(@Parameter(description = "Contains values of Food") @Valid @RequestBody FoodDTO foodDTO,
@@ -95,11 +95,11 @@ public class FoodController {
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "Deleting is successful",
             content = @Content()),
             @ApiResponse(responseCode = "403", description = "Sending request to the endpoint with READ_PRIVILEGE"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "401", description = "Sending request to the endpoint without pre-authentication"
-                    , content = @Content(mediaType = "application/json")),
+                    , content = @Content(mediaType = "application/problem+json")),
             @ApiResponse(responseCode = "400", description = "Path-variable is missing",
-                    content = @Content(mediaType = "application/json"))})
+                    content = @Content(mediaType = "application/problem+json"))})
     @PreAuthorize("hasAuthority('WRITE_PRIVILEGE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFood(@Parameter(description = "The ID of Food") @PathVariable Integer id) {
