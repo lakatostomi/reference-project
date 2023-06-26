@@ -5,15 +5,21 @@ import com.example.caloriecalculator.dto.IntakeDTO;
 import com.example.caloriecalculator.dto.LoginRequestDTO;
 import com.example.caloriecalculator.dto.RegistrationDTO;
 import com.example.caloriecalculator.model.Food;
+import com.example.caloriecalculator.repositories.UserRepository;
 import io.restassured.authentication.OAuthSignature;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.with;
@@ -34,10 +40,12 @@ public class CCIntegrationTestRestAssured {
         url = "http://localhost:" + port + "/api/rest";
     }
 
+    @Autowired
+    UserRepository userRepository;
+
 
     @BeforeEach
     void setUp() {
-
     }
 
     @AfterEach
@@ -102,16 +110,16 @@ public class CCIntegrationTestRestAssured {
     void testLogin_whenNotExistingAccount_thanUnauthorized() {
         LoginRequestDTO loginRequestDTO = new LoginRequestDTO("thismailnotexist@gmail.com", "1234");
         with().contentType("application/json").body(loginRequestDTO).when().post(url + "/auth/login").then()
-                .statusCode(401).log().ifError().assertThat().body("message", equalTo("Bad credentials!"));
+                .statusCode(401).log().ifError().assertThat().body("detail", equalTo("Bad credentials"));
     }
 
     @Test
     void testLogin_whenValidAccount_thanOK() {
-        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("peter@gmail.com", "2222");
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("tom@gmail.com", "1111");
         with().contentType("application/json").body(loginRequestDTO).when().post(url + "/auth/login").then()
                 .statusCode(200).log().ifError()
                 .assertThat().header("Authorization", isA(String.class))
-                .assertThat().body("name", equalTo("Peter"));
+                .assertThat().body("name", equalTo("Tom"));
     }
 
     @Test
@@ -125,18 +133,18 @@ public class CCIntegrationTestRestAssured {
 
     @Test
     void testUserRole_whenUserInvokeRestrictedEndpoint_thanForbidden() {
-        String token = executeLoginToGetToken("peter@gmail.com", "2222");
+        String token = executeLoginToGetToken("tom@gmail.com", "1111");
 
         //list all users
         given().auth().oauth2(token, OAuthSignature.HEADER).when().get(url + "/user")
                 .then().statusCode(403).log().ifError()
-                .body("message", equalTo("You do not have permission to access this page!"));
+                .body("detail", equalTo("You do not have permission to access this page!"));
 
         //save new food
         Food pizza = new Food(null, "Pizza", 300.0, 100, 50.0, 21.1, 32.0);
         given().auth().oauth2(token, OAuthSignature.HEADER).with().contentType("application/json").body(pizza).when().post(url + "/foods")
                 .then().statusCode(403).log().ifError()
-                .body("message", equalTo("You do not have permission to access this page!"));
+                .body("detail", equalTo("You do not have permission to access this page!"));
     }
 
     @Test
@@ -174,11 +182,11 @@ public class CCIntegrationTestRestAssured {
                 .with().contentType("application/json")
                 .body(intakeDTO).post(url + "/user/intake").then()
                 .statusCode(200).log().ifError()
-                .body("_links.allIntake[1].href", equalTo(url + "/user/intake/2"));
+                .body("_links.allIntake[1].href", equalTo(url + "/user/intake/3"));
 
         given().auth().oauth2(token, OAuthSignature.HEADER)
                 .with().contentType("application/json")
-                .get(url + "/user/intake/{id}", 2).then().statusCode(200)
+                .get(url + "/user/intake/{id}", 3).then().statusCode(200)
                 .log().ifError()
                 .assertThat().body("quantityOfFood", equalTo(500.0F))
                 .assertThat().body("food.name", equalTo("Pizza"))
@@ -231,21 +239,21 @@ public class CCIntegrationTestRestAssured {
 
     @Test
     void testOrphanRemoval_whenDeleteUser_thanRemoveIntakesAndSports() {
-        String token = executeLoginToGetToken("tom@gmail.com", "1111");
+        String token = executeLoginToGetToken("peter@gmail.com", "2222");
         //delete user account
         given().auth().oauth2(token, OAuthSignature.HEADER)
-                .with().contentType("application/json").pathParam("id", "1")
+                .with().contentType("application/json").pathParam("id", "2")
                 .delete(url + "/user/{id}").then().statusCode(204).log().ifError();
         //send request to get an intake of user
         given().auth().oauth2(token, OAuthSignature.HEADER)
-                .with().contentType("application/json").pathParam("id", "1")
+                .with().contentType("application/json").pathParam("id", "2")
                 .get(url + "/user/intake/{id}").then().statusCode(400).log().ifError()
-                .assertThat().body("detail", equalTo("This calorie intake with id=1 is not exist!"));
+                .assertThat().body("detail", equalTo("This calorie intake with id=2 is not exist!"));
         //send request to get a sport activity of user
         given().auth().oauth2(token, OAuthSignature.HEADER)
-                .with().contentType("application/json").pathParam("id", "1")
+                .with().contentType("application/json").pathParam("id", "2")
                 .get(url + "/user/sport/{id}").then().statusCode(400).log().ifError()
-                .assertThat().body("detail", equalTo("This sport with id=1 is not exist!"));
+                .assertThat().body("detail", equalTo("This sport with id=2 is not exist!"));
     }
 
     private String executeLoginToGetToken(String email, String password) {

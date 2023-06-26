@@ -6,10 +6,13 @@ import com.example.caloriecalculator.exception.EmailAlreadyExistsException;
 import com.example.caloriecalculator.exception.TokenHasExpiredException;
 import com.example.caloriecalculator.model.User;
 import com.example.caloriecalculator.model.VerificationToken;
+import com.example.caloriecalculator.model.assemblers.UserModelAssembler;
 import com.example.caloriecalculator.registration.RegistrationFinishedEvent;
 import com.example.caloriecalculator.registration.RegistrationListener;
 import com.example.caloriecalculator.security.Auth0JwtUtils;
+import com.example.caloriecalculator.security.WebSecurityConfig;
 import com.example.caloriecalculator.service.AuthService;
+import com.example.caloriecalculator.service.MyUserDetailsService;
 import com.example.caloriecalculator.service.UserService;
 import com.example.caloriecalculator.service.VerificationTokenService;
 import org.instancio.Instancio;
@@ -17,13 +20,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +36,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,9 +51,11 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@SpringBootTest
-@AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
+@WebMvcTest
+@Import({AuthController.class,UserModelAssembler.class, RestExceptionController.class})
+@ContextConfiguration(classes = WebSecurityConfig.class)
+@ComponentScan(basePackages =("com.example.caloriecalculator.security"))
 @ActiveProfiles("dev")
 class AuthControllerUnitTest {
 
@@ -55,6 +63,8 @@ class AuthControllerUnitTest {
     private MockMvc mockMvc;
     @MockBean
     private UserService userService;
+    @MockBean
+    private MyUserDetailsService userDetailsService;
     @MockBean
     private AuthService authService;
     @MockBean
@@ -67,6 +77,7 @@ class AuthControllerUnitTest {
     private VerificationTokenService tokenService;
     @MockBean
     private RegistrationListener listener;
+
 
     private ObjectMapper mapper;
 
@@ -105,7 +116,8 @@ class AuthControllerUnitTest {
     void testRegistration_whenEmailExist_thanException() throws Exception {
         RegistrationDTO registrationDTO = new RegistrationDTO("Test", "test@test.com", "LT18i8##o", "LT18i8##o");
         when(authService.checkEmailExists(registrationDTO.getEmail())).thenThrow(new EmailAlreadyExistsException(registrationDTO.getEmail()));
-        MvcResult result = mockMvc.perform(post("/api/rest/auth/registration").contentType(MediaType.APPLICATION_JSON)
+        MvcResult result = mockMvc.perform(post("/api/rest/auth/registration")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(registrationDTO))).andExpect(status().isBadRequest()).andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString("An account for that email already exists: [" + registrationDTO.getEmail() + "]!"));
     }
@@ -164,7 +176,7 @@ class AuthControllerUnitTest {
         when(manager.authenticate((new UsernamePasswordAuthenticationToken(requestDTO.getEmail(), requestDTO.getPassword()))))
                 .thenThrow(UsernameNotFoundException.class);
         mockMvc.perform(post("/api/rest/auth/login").contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(requestDTO))).andExpect(status().is4xxClientError());
+                .content(mapper.writeValueAsString(requestDTO))).andExpect(status().isBadRequest());
     }
 
 }

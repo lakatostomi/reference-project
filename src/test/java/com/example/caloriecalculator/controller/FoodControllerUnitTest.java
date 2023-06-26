@@ -2,25 +2,25 @@ package com.example.caloriecalculator.controller;
 
 import com.example.caloriecalculator.dto.FoodDTO;
 import com.example.caloriecalculator.model.Food;
+import com.example.caloriecalculator.model.assemblers.FoodModelAssembler;
+import com.example.caloriecalculator.security.Auth0JwtUtils;
 import com.example.caloriecalculator.service.FoodService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestComponent;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -33,15 +33,14 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@SpringBootTest
-@AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
+@WebMvcTest(FoodController.class)
+@Import({FoodModelAssembler.class, Auth0JwtUtils.class})
 @ActiveProfiles("dev")
 class FoodControllerUnitTest {
 
     @MockBean
     private FoodService foodService;
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -96,8 +95,10 @@ class FoodControllerUnitTest {
         FoodDTO foodDTO = Instancio.create(FoodDTO.class);
         Food food = Instancio.create(Food.class);
         when(foodService.saveFood(foodDTO)).thenReturn(food);
-        MvcResult result = mockMvc.perform(post("/api/rest/foods").contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(foodDTO)))
+        MvcResult result = mockMvc.perform(post("/api/rest/foods")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(foodDTO))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isCreated()).andReturn();
         String createdURI = result.getResponse().getHeader("Location");
         assertThat(createdURI, is(equalTo(baseURI + "/" + food.getId())));
@@ -110,8 +111,10 @@ class FoodControllerUnitTest {
         FoodDTO foodDTO = Instancio.create(FoodDTO.class);
         Food food = Instancio.create(Food.class);
         when(foodService.updateFood(foodDTO, 1)).thenReturn(food);
-        MvcResult result = mockMvc.perform(put("/api/rest/foods/{id}", 1).contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(foodDTO)))
+        MvcResult result = mockMvc.perform(put("/api/rest/foods/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(foodDTO))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isCreated()).andReturn();
         String createdURI = result.getResponse().getHeader("Location");
         assertThat(createdURI, is(equalTo(baseURI + "/" + food.getId())));
@@ -121,7 +124,9 @@ class FoodControllerUnitTest {
     @Test
     @WithMockUser(username = "test@test.com", authorities = {"ROLE_ADMIN", "WRITE_PRIVILEGE"})
     void testDeleteFood() throws Exception {
-        mockMvc.perform(delete("/api/rest/foods/{id}", 1)).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/rest/foods/{id}", 1)
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isNoContent());
         verify(foodService, times(1)).deleteFood(1);
     }
 

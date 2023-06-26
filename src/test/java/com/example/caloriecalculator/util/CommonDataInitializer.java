@@ -54,17 +54,20 @@ public class CommonDataInitializer {
         tom = userRepository.save(tom);
         User peter = new User("Peter", passwordEncoder.encode("2222"), "peter@gmail.com", true);
         peter.setRoles(List.of(roleUser));
-        userRepository.save(peter);
+        peter = userRepository.save(peter);
         User admin = new User("admin", passwordEncoder.encode("3333"), "admin@gmail.com", true);
         admin.setRoles(List.of(roleAdmin));
         userRepository.save(admin);
         tom.getCalorieIntakeList().add(new CalorieIntake(null, new Date(), 343.2, hamburger, tom));
         tom.getSportList().add(new Sport(null, "Run", tom, 456.0, new Date()));
         userRepository.save(tom);
+        peter.getCalorieIntakeList().add(new CalorieIntake(null, new Date(), 222.1, pizza, peter));
+        peter.getSportList().add(new Sport(null, "Cardio", peter, 550.0, new Date()));
+        userRepository.save(peter);
         LocalDateTime now = LocalDateTime.now();
-        verificationTokenRepository.save(new VerificationToken("e5e38bed-dafe-4af2-a988-015424e69954", now.minusSeconds(60).toInstant(ZoneOffset.of("+02:00")).toEpochMilli(), tom));
+        verificationTokenRepository.save(new VerificationToken("e5e38bed-dafe-4af2-a988-015424e69954", now.minusSeconds(60).toInstant(ZoneOffset.of("+02:00")).toEpochMilli(), peter));
         verificationTokenRepository.save(new VerificationToken("e5e38bed-dafe-4af2-a988-015424e68888", now.plusSeconds(10).toInstant(ZoneOffset.of("+02:00")).toEpochMilli(), peter));
-        verificationTokenRepository.save(new VerificationToken("e6e38bed-dafe-4af2-a988-015424e69954", now.minusHours(25).toInstant(ZoneOffset.of("+02:00")).toEpochMilli(), peter));
+        verificationTokenRepository.save(new VerificationToken("e6e38bed-dafe-4af2-a988-015424e69954", now.minusHours(25).toInstant(ZoneOffset.of("+02:00")).toEpochMilli(), tom));
         verificationTokenRepository.save(new VerificationToken("e5e38bed-dade-4af2-a988-015424e69954", now.plusSeconds(60).toInstant(ZoneOffset.of("+02:00")).toEpochMilli(), tom));
         log.info("Init data has finished!");
     }
