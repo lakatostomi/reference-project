@@ -5,6 +5,7 @@ import com.example.caloriecalculator.exception.EmailAlreadyExistsException;
 import com.example.caloriecalculator.exception.TokenHasExpiredException;
 import com.example.caloriecalculator.util.RestResponseUtil;
 import com.mysql.cj.exceptions.NumberOutOfRange;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.NoSuchElementException;
@@ -26,21 +28,19 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
-public class RestExceptionController  {
+public class RestExceptionController {
 
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ProblemDetail handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        ProblemDetail problemDetail = RestResponseUtil.createProblemDetail(HttpStatus.BAD_REQUEST.value(), createStringFromBindingResult(ex.getBindingResult()));
-        log.warn(problemDetail.toString());
-        return problemDetail;
-    }
-
-    @ExceptionHandler({HttpMessageNotReadableException.class, MissingServletRequestParameterException.class, MissingPathVariableException.class})
-    protected ProblemDetail handleMethodArgumentNotValid(Exception ex) {
-        ProblemDetail problemDetail = RestResponseUtil.createProblemDetail(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
-        log.warn(problemDetail.toString());
-        return problemDetail;
+    @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class, MissingServletRequestParameterException.class, MissingPathVariableException.class, NoSuchElementException.class, EmptyResultDataAccessException.class, EmailAlreadyExistsException.class, TokenHasExpiredException.class, NumberOutOfRange.class, EntityNotFoundException.class, AccountIsUnavailableException.class})
+    protected ProblemDetail handleClientsBadRequests(Exception ex) {
+        if (ex instanceof MethodArgumentNotValidException argEx) {
+            ProblemDetail problemDetail = RestResponseUtil.createProblemDetail(HttpStatus.BAD_REQUEST.value(), createStringFromBindingResult(argEx.getBindingResult()));
+            log.warn(problemDetail.toString());
+            return problemDetail;
+        } else {
+            ProblemDetail problemDetail = RestResponseUtil.createProblemDetail(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+            log.warn(problemDetail.toString());
+            return problemDetail;
+        }
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -53,14 +53,6 @@ public class RestExceptionController  {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     protected ProblemDetail handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
         ProblemDetail problemDetail = RestResponseUtil.createProblemDetail(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), ex.getMessage());
-        log.warn(problemDetail.toString());
-        return problemDetail;
-    }
-
-
-    @ExceptionHandler({NoSuchElementException.class, EmptyResultDataAccessException.class, EmailAlreadyExistsException.class, TokenHasExpiredException.class, NumberOutOfRange.class, EntityNotFoundException.class, AccountIsUnavailableException.class})
-    public ProblemDetail handleBadRequests(Exception ex) {
-        ProblemDetail problemDetail = RestResponseUtil.createProblemDetail(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         log.warn(problemDetail.toString());
         return problemDetail;
     }
