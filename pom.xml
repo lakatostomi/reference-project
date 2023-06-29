@@ -163,7 +163,7 @@
                 <executions>
                     <execution>
                         <id>docker-clean</id>
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -179,7 +179,7 @@
                     </execution>
                     <execution>
                         <id>docker-build</id>
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
