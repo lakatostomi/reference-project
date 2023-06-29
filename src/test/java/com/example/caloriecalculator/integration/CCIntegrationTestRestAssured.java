@@ -1,25 +1,25 @@
 package com.example.caloriecalculator.integration;
 
-import com.example.caloriecalculator.MyTestConfigClass;
+import com.example.caloriecalculator.MyTestContainer;
 import com.example.caloriecalculator.dto.IntakeDTO;
 import com.example.caloriecalculator.dto.LoginRequestDTO;
 import com.example.caloriecalculator.dto.RegistrationDTO;
 import com.example.caloriecalculator.model.Food;
 import com.example.caloriecalculator.repositories.UserRepository;
+import com.example.caloriecalculator.util.CommonDataInitializer;
 import io.restassured.authentication.OAuthSignature;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.testcontainers.context.ImportTestcontainers;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.with;
@@ -27,7 +27,6 @@ import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@Import(MyTestConfigClass.class)
 public class CCIntegrationTestRestAssured {
 
     @LocalServerPort
@@ -261,5 +260,16 @@ public class CCIntegrationTestRestAssured {
         return with().contentType("application/json").body(loginRequestDTO).when().post(url + "/auth/login")
                 .then().statusCode(200)
                 .log().ifError().extract().header("Authorization").substring("Bearer ".length());
+    }
+
+    @TestConfiguration
+    @ImportTestcontainers(MyTestContainer.class)
+    static class TestConfig {
+
+        @Transactional
+        @Bean(initMethod = "initData")
+        public CommonDataInitializer commonDataInitializer() {
+            return new CommonDataInitializer();
+        }
     }
 }

@@ -24,7 +24,7 @@ so I created a compose.yaml which is recognised by the app after startup.
 - I use problem+json format to handle errors therefore RestExceptionController class was recoded.
 
 CI/CD
-- I created a '.gitlab-ci.yml' file to practise CI/CD process on GitLab, this file contains a basic pipeline configurations, 3 stages and deploy stage is dummy has only echo scripts where mention steps,
+- I created a '.gitlab-ci.yml' file to practise CI/CD process on GitLab, this file contains a basic pipeline configurations, 3 stages and deploy stage is dummy has only echo scripts.
 
 There are plenty of way you can run App:
 - CalorieCalculatorApplication.class will bootstrap the App using dev profile and uses the compose.yaml file in classpath to create DB.
