@@ -29,7 +29,7 @@ CI/CD
 There are plenty of way you can run App:
 - CalorieCalculatorApplication.class will bootstrap the App using dev profile and uses the compose.yaml file in classpath to create DB.
 - After disable compose support in application-dev.properties CalorieCalculatorApplicationTests.class will bootstrap the App  using dev profile and start a Testcontainer to create DB. 
-- Build image with Dockerfile and use the docker-compose.yaml to compose up the App and DB in prod environment. 
+- Build image with maven and use the service.yaml to compose up the App and DB in prod environment. 
 - mvn install will remove existing image and a build a new image. 
 
 I permanently develop the API with further functions...I'm opened to get advices and feedbacks from anyone who would like to help me to become a better developer.. :)

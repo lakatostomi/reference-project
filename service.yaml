@@ -1,7 +1,7 @@
 
 services:
   server:
-    image: ccapp:0.0.1-SNAPSHOT
+    image: calorie-calculator:0.0.1-SNAPSHOT
     container_name: RESTAPI
     env_file:
       - .env
