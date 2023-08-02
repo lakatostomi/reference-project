@@ -1,12 +1,14 @@
 package com.example.caloriecalculator.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import jakarta.persistence.*;
+
 import java.util.Collection;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 //@Table(schema = "caloriecalculator")
 @Entity(name = "role")

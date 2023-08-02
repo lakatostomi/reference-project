@@ -9,7 +9,7 @@ The main functions in a few words:
 
 Project information:
 
-- Auth0 authentication 
+- Auth0 using JWT authentication 
 - Two Roles are introduced (ADMIN, USER) 
 - Delivering states through HATEOAS
 - Resources saved in MYSQL DB
@@ -26,11 +26,10 @@ so I created a compose.yaml which is recognised by the app after startup.
 CI/CD
 - I created a '.gitlab-ci.yml' file to practise CI/CD process on GitLab, this file contains a basic pipeline configurations, 3 stages and deploy stage is dummy has only echo scripts.
 
-There are plenty of way you can run App:
+There are 3 way to run the App:
 - CalorieCalculatorApplication.class will bootstrap the App using dev profile and uses the compose.yaml file in classpath to create DB.
 - After disable compose support in application-dev.properties CalorieCalculatorApplicationTests.class will bootstrap the App  using dev profile and start a Testcontainer to create DB. 
-- Build image with maven and use the service.yaml to compose up the App and DB in prod environment. 
-- mvn install will remove existing image and a build a new image. 
+- Build image with maven and use the ./docker-compose/service.yaml to compose up the App and DB in prod environment.  
 
 I permanently develop the API with further functions...I'm opened to get advices and feedbacks from anyone who would like to help me to become a better developer.. :)
 

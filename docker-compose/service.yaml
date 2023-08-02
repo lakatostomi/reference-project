@@ -1,0 +1,40 @@
+version: '2.9'
+services:
+  server:
+    image: ${PROJECT_NAME}:${PROJECT_VERSION:-latest}
+    container_name: RESTAPI
+    volumes:
+      - "./docker-logs:/workspace/calorie-calculator/logs"
+    ports:
+      - "8080:8080"
+    environment:
+      - "SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/${MYSQL_DB}"
+      - "SPRING_PROFILES_ACTIVE=prod"
+      - "SPRING_DATASOURCE_USERNAME=${MYSQL_USER}"
+      - "SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}"
+    networks:
+      - test-network
+    links:
+      - mysqldb
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+  mysqldb:
+    container_name: mysqldb
+    image: mysql:${MYSQL_VERSION}
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DB}"
+    networks:
+      - test-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "-u$MYSQL_USER", "-p$MYSQL_PASSWORD",  "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 2
+
+networks:
+  test-network:
+    driver: bridge

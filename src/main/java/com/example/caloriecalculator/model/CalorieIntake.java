@@ -1,14 +1,14 @@
 package com.example.caloriecalculator.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import jakarta.persistence.*;
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 //@Table(schema = "caloriecalculator")
 @Entity(name = "calorie_intake")

@@ -31,7 +31,7 @@ public class LoggerInterceptor implements HandlerInterceptor {
     }
 
     private void logRequestHeaders(HttpServletRequest request) {
-        log.info("Request header:");
+        log.debug("Request header:");
         Iterator<String> itr = request.getHeaderNames().asIterator();
         while (itr.hasNext()) {
             String key = itr.next();
@@ -42,7 +42,7 @@ public class LoggerInterceptor implements HandlerInterceptor {
     }
 
     private void logResponseHeaders(HttpServletResponse response) {
-        log.info("Response header:");
+        log.debug("Response header:");
         Iterator<String> itr = response.getHeaderNames().iterator();
         while (itr.hasNext()) {
             String key = itr.next();
