@@ -1,4 +1,4 @@
-This Calorie Calculator "light" REST API provides information about my actual skills through some basic functions and setups.
+This Calorie Calculator "light" monolith REST API provides information about my actual skills through some basic functions and setups.
 In function the API is the backend layer of a calorie calculator webapp.
 
 The main functions in a few words:
@@ -20,7 +20,7 @@ Project is migrated to Spring Boot 3.1.0! Therefor some modifications were execu
 
 - H2 DB in dev environment has removed, instead of I use TestContainer, and I tested the docker compose support as well,
 so I created a compose.yaml which is recognised by the app after startup.
-- Flyway migration removed I rely on Hibernate to create schema.
+- Flyway migration removed I rely on Docker and Hibernate to create schema.
 - I use problem+json format to handle errors therefore RestExceptionController class was recoded.
 
 CI/CD
