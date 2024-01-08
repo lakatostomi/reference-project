@@ -27,7 +27,7 @@ import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class CCIntegrationTestRestAssured {
+public class CCIntegrationLiveRestAssuredTests {
 
     @LocalServerPort
     int port;

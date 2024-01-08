@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 @Component
-@Profile("dev")
+@Profile({"dev", "stage"})
 public class DataInitializeOnStartUp implements ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired

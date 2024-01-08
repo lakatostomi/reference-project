@@ -1,15 +1,18 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
 stages:
   - test
   - build
-  - deploy
 
 variables:
-  IMAGE_NAME: lakatostomi/demo-app
-  IMAGE_TAG: demo-restapi-1.0
+  IMAGE_NAME: lakatostomi/myprojects
+  IMAGE_TAG: cc-restapi-1.0
 
 run_tests:
   stage: test
-  image: maven:latest 
+  image: maven:3.8.6-eclipse-temurin-17
   services:
     - name: docker:dind
       command: ["--tls=false"]
@@ -33,10 +36,31 @@ build_image:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
 
-deploy:
-  stage: deploy
-  script:
-    echo "Login to server!"
-    echo "Login to dockerhub!"
-    echo "Stop and remove running app on server!"
-    echo "Run latest app on server!"
+---
+
+#workflow:
+#  rules:
+#    - if: $CI_COMMIT_BRANCH == "main"
+#
+#stages:
+#  - test
+#  - build & push
+#
+#variables:
+#  JSON_KEY: $KEY
+#  ACCOUNT: $SA
+#
+#image: lakatostomi/maven-cloudsdk:latest
+#
+#test:
+#  stage: test
+#  script:
+#    - mvn test
+#
+#build_push:
+#  stage: build & push
+#  before_script:
+#    - gcloud auth activate-service-account $ACCOUNT --key-file=$JSON_KEY
+#    - gcloud auth configure-docker eu.gcr.io
+#  script:
+#    - mvn clean install -DskipTests
