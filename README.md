@@ -32,8 +32,10 @@ In order to test the registration function of the API you have to set a valid em
 CI/CD
 - I have created a '.gitlab-ci.yml' file to configure a CI/CD pipeline on GitLab. 2 pipelines were created both are in the same file:
   1. I build and push the image with a `Dockerfile` to DockerHub Registry.
-  2. I build and push the image to Google Container Registry with maven JIB plugin, this pipeline use my custom docker image that I configured [`here`](https://github.com/lakatostomi/rest-api-on-gcp/tree/main/pipeline_images)
+  2. I build and push the image to Google Container Registry with maven JIB plugin, this pipeline use my custom docker image that I configured [`here`](https://github.com/lakatostomi/rest-api-on-gcp/)
 
 I have deployed the API to Google Cloud therefore I configured a staging environment where the API uses a Cloud SQL instance as a persistence layer.  
+
+I have developed another webapp that I deployed to Google Cloud. The Cloud infrastructure of the app was provisioned with Terraform. https://github.com/lakatostomi/rest-api-on-gcp  
 
 Thanks for reading!
